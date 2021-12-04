@@ -1,3 +1,7 @@
+###############################################################################
+# base/zsh
+###############################################################################
+
 : ${XDG_DOWNLOAD_DIR:="$HOME/Downloads"}
 
 sed -i "s@XDG_DOWNLOAD_DIR@$XDG_DOWNLOAD_DIR@g"         "$XDG_CONFIG_HOME/user-dirs.dirs"

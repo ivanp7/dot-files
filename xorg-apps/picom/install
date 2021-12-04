@@ -1,3 +1,7 @@
+###############################################################################
+# xorg-apps/picom
+###############################################################################
+
 [ -f "$XDG_CONFIG_HOME/picom/picom.conf" ] ||
 cat > "$XDG_CONFIG_HOME/picom/picom.conf" << "EOF"
 # Thank you code_nomad: http://9m.no/ꪯ鵞
