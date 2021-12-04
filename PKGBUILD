@@ -15,12 +15,16 @@ pkgver ()
 prepare ()
 {
     : ${DOT_FILES_DIR:="../content"}
+    : ${DOT_FILES_PKG_PREPARE:-"../prepare"}
 
     # check dot-files directory existence
-    [ "$DOT_FILES_DIR" ] || { echo "DOT_FILES_DIR is not set"; exit 1; }
     [ -d "$DOT_FILES_DIR" ] || { echo "DOT_FILES_DIR is not a directory"; exit 1; }
 
     # copy configuration to $srcdir
+    [ -f "$srcdir/install" ] && rm -f "$srcdir/install"
+    [ -f "$srcdir/reinstall" ] && rm -f "$srcdir/reinstall"
+    [ -f "$srcdir/uninstall" ] && rm -f "$srcdir/uninstall"
+
     IFS=$'\n'
     for group in $(find "$DOT_FILES_DIR" -mindepth 1 -maxdepth 1 -type d \! -name ".*" | sort)
     do
@@ -38,7 +42,7 @@ prepare ()
     done
 
     # run custom preparation scripts
-    for script in $(find "${DOT_FILES_PKG_PREPARE:-"../prepare"}" -type f -name "*.sh" | sort)
+    for script in $(find "$DOT_FILES_PKG_PREPARE" -type f -name "*.sh" 2> /dev/null | sort)
     do
         [ -x "$script" ] && "$script"
     done
