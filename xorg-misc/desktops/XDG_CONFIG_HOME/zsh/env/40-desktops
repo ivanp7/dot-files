@@ -1,0 +1,13 @@
+: ${DESKTOP_1:="term"}
+: ${DESKTOP_2:="net"}
+: ${DESKTOP_3:="msg"}
+: ${DESKTOP_4:="stuff"}
+: ${DESKTOP_5:="extra"}
+: ${DESKTOP_6:="extra2"}
+: ${DESKTOP_7:="extra3"}
+: ${DESKTOP_8:="extra4"}
+: ${DESKTOP_9:="extra5"}
+: ${DESKTOP_10:="extra6"}
+
+export DESKTOP_1 DESKTOP_2 DESKTOP_3 DESKTOP_4 DESKTOP_5 DESKTOP_6 DESKTOP_7 DESKTOP_8 DESKTOP_9 DESKTOP_10
+

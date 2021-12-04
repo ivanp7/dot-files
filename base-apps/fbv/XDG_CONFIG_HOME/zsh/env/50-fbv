@@ -1,0 +1,3 @@
+: ${VIEWER:="fbv.sh"}
+export VIEWER
+

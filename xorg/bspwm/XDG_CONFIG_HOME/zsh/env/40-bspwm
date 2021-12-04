@@ -1,0 +1,11 @@
+if [ "$DISPLAY" ]
+then
+    export SCRATCHPAD_DIR="$(mktemp -d "$TMPDIR_CURRENT/scratchpad")"
+    trap 'rm -rf "$SCRATCHPAD_DIR"' EXIT
+
+    export PRIMARY_MONITOR="$(bspc query -T -m primary | jq --raw-output ".name")"
+
+    bspwm-monitor-info.sh area | read MONITOR_WIDTH MONITOR_HEIGHT MONITOR_X MONITOR_Y
+    export MONITOR_WIDTH MONITOR_HEIGHT MONITOR_X MONITOR_Y
+fi
+

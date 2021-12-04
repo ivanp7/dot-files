@@ -1,0 +1,33 @@
+# This is Git's per-user configuration file.
+[core]
+    pager = nvimpager
+    editor = nvim
+
+[alias]
+    dif = difftool
+    root = rev-parse --show-toplevel
+    ctags = !.git/hooks/ctags
+
+[diff]
+    tool = nvim
+[difftool]
+    prompt = false
+    trustExitCode = true
+[difftool "nvim"]
+    cmd = nvim -d "$LOCAL" "$REMOTE" -c 'wincmd w'
+
+[merge]
+    tool = nvim
+[mergetool]
+    prompt = false
+    trustExitCode = true
+[mergetool "nvim"]
+    cmd = nvim -d "$LOCAL" "$MERGED" "$BASE" "$REMOTE" -c 'wincmd w' -c 'wincmd J'
+
+[pull]
+    rebase = false
+
+[init]
+    defaultBranch = master
+    templatedir = ~/.config/git/template
+

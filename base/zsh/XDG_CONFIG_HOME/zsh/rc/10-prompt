@@ -1,0 +1,528 @@
+# Auxilliary constants & functions {{{
+
+[ "$(id -u)" -eq 0 ] && _p_root=true
+
+[ -z "$_p_root" ] && _p_prompt_character="$" || _p_prompt_character="#"
+
+[ "$_p_interactive_shells" ] &&
+    export _p_interactive_shells="${_p_interactive_shells}${_p_prompt_character}" ||
+    export _p_interactive_shells="${_p_prompt_character}"
+
+[ -n "$PARENT_SHELL_PID" -a -f "$TMPDIR_CURRENT/pid/$TTY/$PARENT_SHELL_PID" ] &&
+    export _p_interactive_shells_this_tty=$(($_p_interactive_shells_this_tty + 1)) ||
+    export _p_interactive_shells_this_tty=1
+
+[ "${#_p_interactive_shells}" -ne "$_p_interactive_shells_this_tty" ] &&
+    _p_intsh_indicator="${_p_interactive_shells:0:-${_p_interactive_shells_this_tty}}+${_p_interactive_shells: -${_p_interactive_shells_this_tty}}" ||
+    _p_intsh_indicator="$_p_interactive_shells"
+
+# }}}
+# Color theme {{{
+
+if [ "$_colors" -ge 256 ]
+then
+    if [ -z "$_p_root" ]
+    then
+        _p_shell_info_color="$(_color 248 238)"
+        _p_shell_status_color="$(_color 252 238)"
+        _p_shell_info_color_triangle="$(_color 238)"
+    else
+        _p_shell_info_color="$(_color 8 202)"
+        _p_shell_status_color="$(_color 0 202)"
+        _p_shell_info_color_triangle="$(_color 202)"
+    fi
+
+    _p_pwd_info_color_bg="$(_color "" 240)"
+    _p_pwd_info_color_triangle="$(_color 240)"
+    _p_pwd_info_color_directory="$(_color 254)"
+    _p_pwd_info_color_slash="$(_color 236)"
+    _p_pwd_info_color_skip="$(_color 200)"
+    _p_pwd_perm_info_color="$(_color 1)"
+
+    _p_git_info_color_bg="$(_color "" 238)"
+    _p_git_info_color_triangle="$(_color 238)"
+    _p_git_info_color_skip="$(_color 228)"
+
+    _p_cmd_status_info_color_success_fg="$(_color 15)"
+    _p_cmd_status_info_color_success_bg="$(_color "" 35)"
+    _p_cmd_status_info_color_triangle_success="$(_color 35)"
+    _p_cmd_status_info_color_failure_fg="$(_color 7)"
+    _p_cmd_status_info_color_failure_bg="$(_color "" 124)"
+    _p_cmd_status_info_color_triangle_failure="$(_color 124)"
+
+    _p_cmd_time_info_color_bg="$(_color "" 238)"
+    _p_cmd_time_info_color_fg="$(_color 33)"
+    _p_cmd_time_info_color_triangle="$(_color 238)"
+
+    _p_prompt_postfix_color_default="$(_color 244)"
+
+    _p_rprompt_color="$(_color 0 15)"
+else # fallback colors in case of incorrect conversion to 8 colors
+    if [ -z "$_p_root" ]
+    then
+        _p_shell_info_color="$(_color 7)"
+        _p_shell_info_color_triangle="$(_color 0)"
+    else
+        _p_shell_info_color="$(_color 0 3)"
+        _p_shell_info_color_triangle="$(_color 3)"
+    fi
+
+    _p_pwd_info_color_bg="$(_color "" 7)"
+    _p_pwd_info_color_directory="$(_color 15)"
+    _p_pwd_info_color_slash="$(_color 8)"
+    _p_pwd_info_color_skip="$(_color 13)"
+    _p_pwd_perm_info_color="$(_color 1)"
+
+    _p_git_info_color_bg="$(_color "" 0)"
+    _p_git_info_color_triangle="$(_color 0)"
+    _p_git_info_color_skip="$(_color 11)"
+
+    _p_cmd_status_info_color_success_fg="$(_color 15)"
+    _p_cmd_status_info_color_success_bg="$(_color "" 2)"
+    _p_cmd_status_info_color_failure_fg="$(_color 7)"
+    _p_cmd_status_info_color_failure_bg="$(_color "" 1)"
+
+    _p_cmd_time_info_color_bg="$(_color "" 0)"
+    _p_cmd_time_info_color_fg="$(_color 12)"
+    _p_cmd_time_info_color_triangle="$(_color 0)"
+
+    _p_prompt_postfix_color_default="$(_color 15)"
+
+    _p_rprompt_color="$(_color 0 15)"
+fi
+
+# }}}
+# Shared characters {{{
+
+_p_triangle=""
+_p_bracket=""
+_p_skip="▶"
+
+# }}}
+# Shell info {{{
+
+: ${_p_command_number:=1}
+
+_p_command_number_f ()
+{
+    [ "$_p_command_executed" ] && _p_command_number=$(($_p_command_number+1))
+}
+add-zsh-hook precmd _p_command_number_f
+
+_p_shell_info_f ()
+{
+    local Dot="·"
+
+    local PromptStatus="$STATUS "
+    [ "$PromptStatus" = " " ] && local PromptStatus=
+
+    _p_shell_info_length=$((1 + ${#_p_intsh_indicator} + 1 + ${#_p_command_number} + 1 + ${#PromptStatus}))
+    _p_shell_info="${_p_shell_info_color} ${_p_intsh_indicator}${Dot}${_p_command_number}${_p_shell_status_color} ${PromptStatus}"
+
+    _p_next_triangle_color="$_p_shell_info_color_triangle"
+}
+add-zsh-hook precmd _p_shell_info_f
+
+_p_prev_command_info_f ()
+{
+    _p_exitcode="$?" # This needs to be first
+
+    if [ "$_p_command_executed" ]
+    then
+        unset _p_command_executed
+
+        if [ "$_p_timer" ]
+        then
+            _p_timer_delta=$(($SECONDS - $_p_timer))
+            [ $_p_timer_delta -lt 0 ] && _p_timer_delta=0
+            unset _p_timer
+        fi
+    else
+        unset _p_timer_delta
+        unset _p_timer
+        unset _p_exitcode
+    fi
+
+    _p_in_prompt=true
+}
+add-zsh-hook precmd _p_prev_command_info_f
+
+_p_preexec ()
+{
+    unset _p_in_prompt
+    _p_timer=${_p_timer:-$SECONDS}
+    _p_command_executed=true
+
+    _p_prompt_postcommand_preexec
+}
+add-zsh-hook preexec _p_preexec
+
+# }}}
+# Git info {{{
+
+_p_git_info_f ()
+{
+    local BgColor="$_p_git_info_color_bg"
+
+    local GitInfo="$(git_info "${BgColor}" true)"
+
+    _p_git_info_length="$(echo "$GitInfo" | tail -1)"
+    _p_git_info=""
+    if [ "$_p_git_info_length" -eq 0 ]
+    then
+        _p_git_info_length=0
+        _p_git_info=""
+
+        _p_next_triangle_color="$_p_pwd_info_color_triangle"
+        return
+    fi
+
+    _p_git_info_length=$(($_p_git_info_length + 3))
+    _p_git_info="${BgColor}${_p_pwd_info_color_triangle}${_p_triangle} $(echo "$GitInfo" | head -1)${BgColor} "
+
+    _p_gitindicator_length=4
+    _p_gitindicator="${BgColor}${_p_pwd_info_color_triangle}${_p_triangle} ${_p_git_info_color_skip}${_p_skip} "
+
+    _p_next_triangle_color="$_p_git_info_color_triangle"
+}
+add-zsh-hook precmd _p_git_info_f
+
+# }}}
+# Last command exit code info {{{
+
+_p_signal_name ()
+{
+    case $1 in
+        1  ) echo -n "SIGHUP" ;;
+        2  ) echo -n "SIGINT" ;;
+        3  ) echo -n "SIGQUIT" ;;
+        4  ) echo -n "SIGILL" ;;
+        5  ) echo -n "SIGTRAP" ;;
+        6  ) echo -n "SIGABRT" ;;
+        7  ) echo -n "SIGBUS" ;;
+        8  ) echo -n "SIGFPE" ;;
+        9  ) echo -n "SIGKILL" ;;
+        10 ) echo -n "SIGUSR1" ;;
+        11 ) echo -n "SIGSEGV" ;;
+        12 ) echo -n "SIGUSR2" ;;
+        13 ) echo -n "SIGPIPE" ;;
+        14 ) echo -n "SIGALRM" ;;
+        15 ) echo -n "SIGTERM" ;;
+        16 ) echo -n "SIGSTKFLT" ;;
+        17 ) echo -n "SIGCHLD" ;;
+        18 ) echo -n "SIGCONT" ;;
+        19 ) echo -n "SIGSTOP" ;;
+        20 ) echo -n "SIGTSTP" ;;
+        21 ) echo -n "SIGTTIN" ;;
+        22 ) echo -n "SIGTTOU" ;;
+        23 ) echo -n "SIGURG" ;;
+        24 ) echo -n "SIGXCPU" ;;
+        25 ) echo -n "SIGXFSZ" ;;
+        26 ) echo -n "SIGVTALRM" ;;
+        27 ) echo -n "SIGPROF" ;;
+        28 ) echo -n "SIGWINCH" ;;
+        29 ) echo -n "SIGIO" ;;
+        30 ) echo -n "SIGPWR" ;;
+        31 ) echo -n "SIGSYS" ;;
+        34 ) echo -n "SIGRTMIN" ;;
+        *) echo -n "$1" ;;
+    esac
+}
+
+_p_cmd_status_info_f ()
+{
+    local TriangleColor="$_p_next_triangle_color"
+    local SuccessColorFg="$_p_cmd_status_info_color_success_fg"
+    local SuccessColorBg="$_p_cmd_status_info_color_success_bg"
+    local FailureColorFg="$_p_cmd_status_info_color_failure_fg"
+    local FailureColorBg="$_p_cmd_status_info_color_failure_bg"
+
+    local DownArrow="↓"
+    local Delimiter=":"
+
+    if [ "$_p_exitcode" ]
+    then
+        if [ "$_p_exitcode" -eq 0 ]
+        then
+            _p_cmd_status_info_length=5
+            _p_cmd_status_info="${SuccessColorBg}${TriangleColor}${_p_triangle}${SuccessColorFg} ok "
+
+            _p_next_triangle_color="$_p_cmd_status_info_color_triangle_success"
+            _p_prompt_postfix_color="$_p_cmd_status_info_color_triangle_success"
+        else
+            if [ "$_p_exitcode" -gt 128 -a "$_p_exitcode" -lt 163 ]
+            then
+                local description="$(_p_signal_name $(($_p_exitcode - 128)))"
+            else
+                case "$_p_exitcode" in
+                    1) local description="GENERAL" ;;
+                    2) local description="MISUSE" ;;
+                    126) local description="NOTEXEC" ;;
+                    127) local description="NOTFOUND" ;;
+                esac
+            fi
+            [ "$description" ] && local description="${Delimiter}$description"
+
+            _p_cmd_status_info_length=$((4 + ${#_p_exitcode} + ${#description}))
+            _p_cmd_status_info="${FailureColorBg}${TriangleColor}${_p_triangle}${FailureColorFg} ${DownArrow}${_p_exitcode}${description} "
+
+            _p_next_triangle_color="$_p_cmd_status_info_color_triangle_failure"
+            _p_prompt_postfix_color="$_p_cmd_status_info_color_triangle_failure"
+        fi
+    else
+        _p_cmd_status_info_length=0
+        _p_cmd_status_info=""
+
+        _p_prompt_postfix_color="$_p_prompt_postfix_color_default"
+    fi
+}
+add-zsh-hook precmd _p_cmd_status_info_f
+
+# }}}
+# Last command duration info {{{
+
+_p_cmd_time_info_f ()
+{
+    local TriangleColor="$_p_next_triangle_color"
+    local Postfix="${_p_bracket}"
+
+    if [ -z "$_p_timer_delta" -o "$_p_timer_delta" -eq 0 ]
+    then
+        _p_cmd_time_info_length=$((1 + ${#Postfix}))
+        _p_cmd_time_info="${_color_reset}${TriangleColor}${_p_triangle}${_p_prompt_postfix_color}${Postfix}"
+        return
+    fi
+
+    local BgColor="$_p_cmd_time_info_color_bg"
+
+    local UnitColor="$_p_next_triangle_color"
+    local ValueColor="$_p_next_triangle_color"
+
+    if [ "$_p_timer_delta" -lt 60 ]
+    then
+        _p_cmd_time_info_length=$((4 + ${#_p_timer_delta}))
+        _p_cmd_time_info="${BgColor}${TriangleColor}${_p_triangle} ${ValueColor}${_p_timer_delta}${UnitColor}s "
+    elif [ "$_p_timer_delta" -lt 3600 ]
+    then
+        local minutes=$(($_p_timer_delta / 60))
+        local seconds=$(($_p_timer_delta % 60))
+        _p_cmd_time_info_length=$((5 + ${#minutes} + ${#seconds}))
+        _p_cmd_time_info="${BgColor}${TriangleColor}${_p_triangle} ${ValueColor}${minutes}${UnitColor}m${ValueColor}${seconds}${UnitColor}s "
+    elif [ "$_p_timer_delta" -lt 86400 ]
+    then
+        local hours=$(($_p_timer_delta / 3600))
+        local minutes=$(($_p_timer_delta / 60 % 60))
+        _p_cmd_time_info_length=$((5 + ${#hours} + ${#minutes}))
+        _p_cmd_time_info="${BgColor}${TriangleColor}${_p_triangle} ${ValueColor}${hours}${UnitColor}h${ValueColor}${minutes}${UnitColor}m "
+    else
+        local days=$(($_p_timer_delta / 86400))
+        local hours=$(($_p_timer_delta / 3600 % 24))
+        _p_cmd_time_info_length=$((5 + ${#days} + ${#hours}))
+        _p_cmd_time_info="${BgColor}${TriangleColor}${_p_triangle} ${ValueColor}${days}${UnitColor}d${ValueColor}${hours}${UnitColor}h "
+    fi
+
+    local TriangleColor="$_p_cmd_time_info_color_triangle"
+    _p_cmd_time_info_length=$(($_p_cmd_time_info_length + 1 + ${#Postfix}))
+    _p_cmd_time_info="${_p_cmd_time_info}${_color_reset}${TriangleColor}${_p_triangle}${_p_prompt_postfix_color}${Postfix}"
+}
+add-zsh-hook precmd _p_cmd_time_info_f
+
+# }}}
+# Present working directory info {{{
+
+_p_pwd_perm_info_f ()
+{
+    local IndicatorColor="$_p_pwd_perm_info_color"
+
+    if [ ! -r "." -a ! -w "." ]
+    then
+        _p_pwd_perm_info_length=3
+        _p_pwd_perm_info="${IndicatorColor}rw "
+    elif [ ! -w "." ]
+    then
+        _p_pwd_perm_info_length=2
+        _p_pwd_perm_info="${IndicatorColor}w "
+    elif [ ! -r "." ]
+    then
+        _p_pwd_perm_info_length=2
+        _p_pwd_perm_info="${IndicatorColor}r "
+    else
+        _p_pwd_perm_info_length=0
+        _p_pwd_perm_info=""
+    fi
+}
+add-zsh-hook precmd _p_pwd_perm_info_f
+
+_p_pwd_info_guard_path ()
+{
+    printf "%s" "$1" | sed 's/\\/\\\\/g'
+}
+
+_p_pwd_info_f ()
+{
+    local TriangleColor="$_p_shell_info_color_triangle"
+    local BgColor="$_p_pwd_info_color_bg"
+    local DirColor="$_p_pwd_info_color_directory"
+    local SlashColor="$_p_pwd_info_color_slash"
+
+    local SkipCharacter="${_p_pwd_info_color_skip}${_p_skip}"
+
+    if [ "$PWD" = "/" ]
+    then
+        _p_pwd_info="${BgColor}${TriangleColor}${_p_triangle} ${DirColor}/ "
+        return
+    fi
+
+    local PromptLength=$(($_p_shell_info_length + $_p_cmd_time_info_length + $_p_cmd_status_info_length +
+                            $_p_pwd_perm_info_length + $_p_git_info_length + 3))
+    local MaxOutputLength=$(($COLUMNS - $PromptLength))
+
+    local PathLength=${#PWD}
+    local PathExcess=$(($PathLength - $MaxOutputLength))
+
+    if [ "$PathExcess" -ge "$((2 * $_p_git_info_length - ${_p_gitindicator_length:=0}))" ]
+    then
+        local MaxOutputLength=$(($MaxOutputLength + $_p_git_info_length - $_p_gitindicator_length))
+        local PathExcess=$(($PathLength - $MaxOutputLength))
+        _p_git_info_length=$_p_gitindicator_length
+        _p_git_info="$_p_gitindicator"
+    fi
+
+    local PathDirs=(${(s@/@)${PWD:1}}) # split path into components
+    local DirCounter=${#PathDirs}
+
+    for dir in $PathDirs
+    do
+        if [ "$PathExcess" -le 0 -o "${#dir}" -le 2 ]
+        then
+            local dir="${DirColor}$(_p_pwd_info_guard_path "$dir")"
+        else
+            local DirDelta=$((${#dir} - 2))
+            if [ "$DirDelta" -le "$PathExcess" ]
+            then
+                local dir="${DirColor}$(_p_pwd_info_guard_path "${dir:0:1}")${SkipCharacter}"
+                local PathLength=$(($PathLength - $DirDelta))
+                local PathExcess=$(($PathLength - $MaxOutputLength))
+            else
+                local dir="${DirColor}$(_p_pwd_info_guard_path "${dir:0:-$(($PathExcess + 1))}")${SkipCharacter}"
+                local PathLength=$(($PathLength - $PathExcess))
+                local PathExcess=0
+            fi
+        fi
+
+        local PathStr="${PathStr}${SlashColor}$(($DirCounter % 10))$dir"
+        local DirCounter=$(($DirCounter - 1))
+    done
+
+    _p_pwd_info="${BgColor}${TriangleColor}${_p_triangle} $PathStr "
+}
+add-zsh-hook precmd _p_pwd_info_f
+
+# }}}
+# Prompt {{{
+
+_p_set_cursor_shape ()
+{
+    case $1 in
+        block) echo -ne '\e[2 q' ;;
+        underline) echo -ne '\e[4 q' ;;
+        bar) echo -ne '\e[6 q' ;;
+    esac
+}
+
+_p_set_insert_prompt ()
+{
+    RPROMPT=""
+    _p_set_cursor_shape bar
+}
+
+_p_set_vicommand_prompt ()
+{
+    RPROMPT="%{${_p_rprompt_color}%}vicmd%{$(echo "${_color_reset}")%}"
+    _p_set_cursor_shape block
+}
+
+_p_set_abandoned_prompt ()
+{
+    RPROMPT=""
+    _p_set_cursor_shape block
+}
+
+_p_prompt_init_f ()
+{
+    _p_set_insert_prompt
+}
+add-zsh-hook precmd _p_prompt_init_f
+
+zle-keymap-select ()
+{
+    [ "$KEYMAP" = "vicmd" ] && _p_set_vicommand_prompt || _p_set_insert_prompt
+    zle reset-prompt
+}
+zle -N zle-keymap-select
+
+zle-line-init ()
+{
+    (( ${+terminfo[smkx]} )) && echoti smkx
+
+    _p_set_insert_prompt
+    zle reset-prompt
+}
+zle -N zle-line-init
+
+zle-line-finish ()
+{
+    (( ${+terminfo[rmkx]} )) && echoti rmkx
+
+    _p_buffers[$_p_command_number]="$BUFFER"
+
+    _p_set_abandoned_prompt
+    zle reset-prompt
+}
+zle -N zle-line-finish
+
+_p_prompt_postcommand_preexec ()
+{
+    echo "${_color_reset}"
+}
+
+# Fix a bug when you C-c in CMD mode and you'd be prompted with CMD mode indicator, while in fact you would be in INS mode
+# Fixed by catching SIGINT (C-c), set vim_mode to INS and then repropagate the SIGINT, so if anything else depends on it, we will not break it
+TRAPINT ()
+{
+    _p_set_abandoned_prompt
+    zle && { zle reset-prompt; zle -R; }
+    return $(( 128 + $1 ))
+}
+
+_p_trap_exit ()
+{
+    [ "$_p_in_prompt" ] && _p_set_abandoned_prompt
+    uninit_shell
+}
+trap '_p_trap_exit' EXIT
+
+_p_prompt ()
+{
+    echo "${_color_reset}"
+
+    if [ ! -f "$TMPDIR_CURRENT/shell_info/$TTY/$$" ]
+    then
+        touch -- "$TMPDIR_CURRENT/shell_info/$TTY/$$"
+        separator
+        shell_info
+        echo
+    fi
+
+    echo "${_p_shell_info}${_p_pwd_info}${_p_pwd_perm_info}${_p_git_info}${_p_cmd_status_info}${_p_cmd_time_info}${_color_reset}"
+
+    PROMPT=""
+    PROMPT2=""
+    RPROMPT=""
+    _p_set_insert_prompt
+}
+add-zsh-hook precmd _p_prompt
+
+# }}}
+
+# vim: ft=zsh: foldmethod=marker:

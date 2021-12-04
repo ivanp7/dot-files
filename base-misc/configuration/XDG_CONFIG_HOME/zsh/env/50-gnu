@@ -1,0 +1,4 @@
+# make
+
+export GNUMAKEFLAGS="--no-print-directory"
+

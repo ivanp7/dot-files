@@ -1,0 +1,3 @@
+: ${PDFVIEWER:="pdfpager.sh"}
+export PDFVIEWER
+

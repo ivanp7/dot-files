@@ -1,0 +1,9 @@
+if [ "$DISPLAY" ]
+then
+    : ${TERMINAL:="scratchpad-st.sh"}
+    export TERMINAL
+
+    export SCRATCHPAD0_WIDTH=$(($MONITOR_WIDTH - 25))
+    export SCRATCHPAD0_HEIGHT=$(($MONITOR_HEIGHT - 50))
+fi
+

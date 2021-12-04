@@ -1,0 +1,3 @@
+: ${BROWSER:="w3m.sh"}
+export BROWSER
+

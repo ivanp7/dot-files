@@ -1,0 +1,8 @@
+TPM_DIR="$XDG_CACHE_HOME/tmux/plugins/tpm"
+
+# Remove unused plugins and update used plugins
+"$TPM_DIR/bin/clean_plugins"
+"$TPM_DIR/bin/update_plugins all"
+
+unset TPM_DIR
+

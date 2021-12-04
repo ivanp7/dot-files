@@ -1,0 +1,5 @@
+export DEFAULT_FONT_NAME="xos4 Terminus"
+export DEFAULT_FONT_SIZE="12" # font height
+export DEFAULT_FONT_WIDTH="6"
+export DEFAULT_FONT="${DEFAULT_FONT_NAME}:size=${DEFAULT_FONT_SIZE}"
+

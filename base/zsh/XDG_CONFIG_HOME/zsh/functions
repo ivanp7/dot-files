@@ -1,0 +1,184 @@
+# shell info {{{
+
+userhost ()
+{
+    local UserColor="$(_color 15)${_color_underline}"
+    [ "$(id -u)" -eq 0 ] && UserColor="$(_color 196)${_color_underline}"
+    local AtColor="${_color_no_underline}$(_color 244)"
+    local HostColor="$(_color 15)${_color_underline}"
+
+    echo "${_color_reset}$1${UserColor}$USERNAME${AtColor}@${HostColor}$HOST${_color_reset}"
+}
+
+process_chain ()
+{
+    [ -z "$_pstree" ] && return
+
+    local Chain=(${(s/---/)_pstree})
+    [ "$1" = "no_zsh" -a "${Chain[${#Chain}]}" = "zsh" ] && local Chain=(${(@)Chain[1,${#Chain}-1]})
+
+    local ArrowColor="${_color_reset}$(_color 244)"
+    local Arrow=" → "
+
+    if [ "$_colors" -ge 256 ]
+    then
+        local ZshColor="$(_color 15 240)"
+        local TmuxColor="$(_color 15 31)"
+        local SshColor="$(_color 0 226)${_color_blink}"
+        local SuColor="$(_color 0 202)"
+        local OtherColor="$(_color 250)"
+    else
+        local ZshColor="$(_color 0 15)"
+        local TmuxColor="$(_color 15 6)"
+        local SshColor="$(_color 0 3)"
+        local SuColor="$(_color 0 1)"
+        local OtherColor="$(_color 7)"
+    fi
+
+    for proc in $Chain
+    do
+        case "$proc" in
+            zsh) local proc="${ZshColor} $proc " ;;
+            \(tmux\)) local proc="${TmuxColor} $proc " ;;
+            \(ssh\)) local proc="${SshColor} $proc " ;;
+            sudo|su) local proc="${SuColor} $proc " ;;
+            *) local proc="${OtherColor}$proc" ;;
+        esac
+
+        [ "$ProcessChainStr" ] &&
+            local ProcessChainStr="${ProcessChainStr}${ArrowColor}${Arrow}$proc" ||
+            local ProcessChainStr="$proc"
+    done
+
+    echo "${_color_reset}${ProcessChainStr}${_color_reset}"
+}
+
+shell_info ()
+{
+    local TextColor="$(_color 244)"
+    local ValueColor="$(_color 15)"
+
+    local Login=
+    [[ -o login ]] && local Login="login "
+
+    echo "${TextColor}current date/time: ${ValueColor}$(date)${_color_reset}"
+    echo "${TextColor}tty: ${ValueColor}$TTY${TextColor}, X display: ${ValueColor}${DISPLAY:-none}${_p_color_reset}"
+    echo "${TextColor}terminal: ${ValueColor}$TERM${TextColor}, ${ValueColor}${_colors}${TextColor} colors, ${ValueColor}${COLUMNS}${TextColor}x${ValueColor}${LINES}${TextColor} cells${_color_reset}"
+    echo "${TextColor}process chain: $(process_chain)${_p_color_reset}"
+    echo "${TextColor}running ${Login}${ValueColor}${SHELL}${TextColor} shell as $(userhost)${_color_reset}"
+}
+
+# }}}
+# git info {{{
+
+git_info ()
+{
+    local LocationColor="$(_color 228)"
+    local DotGitWarningColor=$(_color 1)
+
+    # Exit if not inside a Git repository
+    if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1
+    then
+        echo "${_color_reset}"
+        [ -z "$2" ] || echo "0"
+        return
+    fi
+
+    # Git branch/tag, or name-rev if on detached head
+    local GIT_LOCATION=${$(git symbolic-ref -q HEAD || git name-rev --name-only --no-undefined --always HEAD)#(refs/heads/|tags/)}
+    local _gitinfo_length=${#GIT_LOCATION}
+
+    # Exit if inside a .git directory
+    if [ "$(git rev-parse --is-inside-git-dir 2> /dev/null)" = "true" ]
+    then
+        local _gitinfo_length=$(($_gitinfo_length + 5))
+        echo "${_color_reset}$1${LocationColor}$GIT_LOCATION ${DotGitWarningColor}.git${_color_reset}"
+        [ -z "$2" ] || echo "$_gitinfo_length"
+        return
+    fi
+
+    local AheadColor="$(_color 15)"
+    local BehindColor="$(_color 166)"
+
+    local MergingColor="$(_color 33)"
+    local UntrackedColor="$(_color 160)"
+    local ModifiedColor="$(_color 214)"
+    local StagedColor="$(_color 34)"
+
+    local UpArrow="↑"
+    local DownArrow="↓"
+    local UpDownArrow="↕"
+    local Bullet="•"
+
+    local AHEAD="${AheadColor}${UpArrow}NUM"
+    local BEHIND="${BehindColor}${DownArrow}NUM"
+
+    local MERGING="${MergingColor}${UpDownArrow}"
+    local UNTRACKED="${UntrackedColor}${Bullet}"
+    local MODIFIED="${ModifiedColor}${Bullet}"
+    local STAGED="${StagedColor}${Bullet}"
+
+    local -a DIVERGENCES
+    local -a FLAGS
+
+    local NUM_AHEAD="$(git log --oneline @{u}.. 2> /dev/null | wc -l | tr -d ' ')"
+    if [ "$NUM_AHEAD" -gt 0 ]
+    then
+        local _gitinfo_div=true
+        local _gitinfo_length=$(($_gitinfo_length + 1 + ${#NUM_AHEAD}))
+        DIVERGENCES+=( "${AHEAD//NUM/$NUM_AHEAD}" )
+    fi
+
+    local NUM_BEHIND="$(git log --oneline ..@{u} 2> /dev/null | wc -l | tr -d ' ')"
+    if [ "$NUM_BEHIND" -gt 0 ]
+    then
+        local _gitinfo_div=true
+        local _gitinfo_length=$(($_gitinfo_length + 1 + ${#NUM_BEHIND}))
+        DIVERGENCES+=( "${BEHIND//NUM/$NUM_BEHIND}" )
+    fi
+
+    [ "$_gitinfo_div" ] && local _gitinfo_length=$(($_gitinfo_length + 1))
+
+    local GIT_DIR="$(git rev-parse --git-dir 2> /dev/null)"
+    if [ -n "$GIT_DIR" -a -r "$GIT_DIR/MERGE_HEAD" ]
+    then
+        local _gitinfo_flag=true
+        local _gitinfo_length=$(($_gitinfo_length + 1))
+        FLAGS+=( "$MERGING" )
+    fi
+
+    if [ "$(git ls-files $(git rev-parse --show-toplevel) --other --exclude-standard 2> /dev/null)" ]
+    then
+        local _gitinfo_flag=true
+        local _gitinfo_length=$(($_gitinfo_length + 1))
+        FLAGS+=( "$UNTRACKED" )
+    fi
+
+    if ! git diff --quiet 2> /dev/null
+    then
+        local _gitinfo_flag=true
+        local _gitinfo_length=$(($_gitinfo_length + 1))
+        FLAGS+=( "$MODIFIED" )
+    fi
+
+    if ! git diff --cached --quiet 2> /dev/null
+    then
+        local _gitinfo_flag=true
+        local _gitinfo_length=$(($_gitinfo_length + 1))
+        FLAGS+=( "$STAGED" )
+    fi
+
+    [ "$_gitinfo_flag" ] && local _gitinfo_length=$(($_gitinfo_length + 1))
+
+    local -a GIT_INFO
+    GIT_INFO+=( "${LocationColor}$GIT_LOCATION" )
+    [ "${#DIVERGENCES[@]}" -ne 0 ] && GIT_INFO+=( "${(j::)DIVERGENCES}" )
+    [ "${#FLAGS[@]}" -ne 0 ] && GIT_INFO+=( "${(j::)FLAGS}" )
+
+    echo "${_color_reset}$1${(j: :)GIT_INFO}${_color_reset}"
+    [ -z "$2" ] || echo "$_gitinfo_length"
+}
+
+# }}}
+
+# vim: ft=zsh: foldmethod=marker:

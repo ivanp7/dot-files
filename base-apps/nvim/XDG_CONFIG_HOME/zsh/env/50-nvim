@@ -1,0 +1,10 @@
+: ${PAGER:="nvimpager.sh"}
+: ${PAGER_BIN:="nvimpager_bin.sh"}
+: ${EDITOR:="nvim.sh"}
+: ${EDITOR_BIN:="nvim_bin.sh"}
+: ${VISUAL:="$EDITOR"}
+
+export PAGER EDITOR VISUAL
+export PAGER_BIN EDITOR_BIN
+export VISUAL
+

@@ -1,0 +1,48 @@
+# sxhkd hotkeys {{{
+
+# make sxhkd reload its configuration files:
+super + Escape
+    pkill -USR1 -x sxhkd; \
+    notify-send -t 1000 'sxhkd' 'Reloaded!'
+
+# }}}
+# launch programs {{{
+
+# program launcher
+super + Return
+    kbd-language.sh english; \
+    dmenu_run
+
+# }}}
+# hardware control {{{
+
+# volume control
+{XF86AudioRaiseVolume,XF86AudioLowerVolume,XF86AudioMute}
+    volume.sh {up,down,toggle}
+ctrl + {XF86AudioRaiseVolume,XF86AudioLowerVolume,XF86AudioMute}
+    volume.sh {next,prev, }
+
+# monitor brightness control
+{XF86MonBrightnessUp,XF86MonBrightnessDown}
+    xbacklight.sh {up,down}
+ctrl + {XF86MonBrightnessUp,XF86MonBrightnessDown}
+    xbacklight.sh
+
+# }}}
+# miscellaneous {{{
+
+# copy primary selection to clipboard
+super + alt + c
+    clip-prim.sh
+
+# change keyboard layout
+super + Scroll_Lock
+    kbd-layout.sh toggle
+
+# XKill
+super + x
+    xkillthis.sh
+
+# }}}
+
+# vim: foldmethod=marker:

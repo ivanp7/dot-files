@@ -1,0 +1,30 @@
+# PATH
+if [ -z "$USER_BINARY_DIR" ]
+then
+    export USER_BINARY_DIR="$HOME/.local/bin"
+    export USERPATH="$(find -L "$USER_BINARY_DIR" -path "*/.*" -prune -o -type d -print | tr '\n' ':' | head -c -1)"
+    export PATH="$PATH:$USERPATH"
+fi
+
+# tmpfs directory
+
+export TMPDIR="/tmp"
+[ -z "$TMPDIR_CURRENT" ] && export TMPDIR_CURRENT="$(mktemp -d)"
+trap 'rm -rf "$TMPDIR_CURRENT"' EXIT
+
+# sudo configuration
+
+export SUDO_PRESERVE_ENV="STATUS,TMPDIR_CURRENT,PARENT_SHELL_PID_EXPORTED,_p_interactive_shells,_p_interactive_shells_this_tty"
+
+# extra configuration
+
+_ZSH_ENV_DIR="$(realpath -L "$ZDOTDIR/env")"
+if [ -d "$_ZSH_ENV_DIR" ]
+then
+    for file in $(find "$_ZSH_ENV_DIR/" -type f,l | sort)
+    do . "$file"
+    done
+fi
+unset _ZSH_ENV_DIR
+
+# vim: ft=zsh:

@@ -1,0 +1,2 @@
+export SDCV_HISTFILE="$XDG_CACHE_HOME/sdcv-history"
+

@@ -1,0 +1,10 @@
+TPM_DIR="$XDG_CACHE_HOME/tmux/plugins/tpm"
+
+# Install tpm
+git clone "https://github.com/tmux-plugins/tpm" "$TPM_DIR"
+
+# Install plugins
+"$TPM_DIR/bin/install_plugins"
+
+unset TPM_DIR
+
