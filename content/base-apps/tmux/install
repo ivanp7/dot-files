@@ -2,13 +2,16 @@
 # base-apps/tmux
 ###############################################################################
 
-TPM_DIR="$XDG_CACHE_HOME/tmux/plugins/tpm"
+PLUGINS_DIR="$XDG_CACHE_HOME/tmux/plugins"
+
+# Create plugins directory
+mkdir -p -- "$PLUGINS_DIR"
 
 # Install tpm
-git clone "https://github.com/tmux-plugins/tpm" "$TPM_DIR"
+git clone "https://github.com/tmux-plugins/tpm" "$PLUGINS_DIR/tpm"
 
 # Install plugins
-"$TPM_DIR/bin/install_plugins"
+"$PLUGINS_DIR/tpm/bin/install_plugins"
 
-unset TPM_DIR
+unset PLUGINS_DIR
 

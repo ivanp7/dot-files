@@ -2,9 +2,5 @@
 # base-apps/tmux
 ###############################################################################
 
-TPM_DIR="$XDG_CACHE_HOME/tmux/plugins/tpm"
-
-rm -rf -- "$TPM_DIR"
-
-unset TPM_DIR
+rm -rf -- "$XDG_CACHE_HOME/tmux/plugins"
 

@@ -5,8 +5,12 @@
 EDITOR_AUTOLOAD_DIR="$XDG_DATA_HOME/nvim/site/autoload"
 PAGER_AUTOLOAD_DIR="$XDG_DATA_HOME/nvimpager/site/autoload"
 
+# Remove plug.vim
 [ -e "$EDITOR_AUTOLOAD_DIR/plug.vim" ] && rm -f -- "$EDITOR_AUTOLOAD_DIR/plug.vim"
 [ -e "$PAGER_AUTOLOAD_DIR/plug.vim" ] && rm -f -- "$PAGER_AUTOLOAD_DIR/plug.vim"
 
 unset EDITOR_AUTOLOAD_DIR PAGER_AUTOLOAD_DIR
+
+# Remove plugins directory
+rm -rf -- "$XDG_CACHE_HOME/nvim/plugged"
 
