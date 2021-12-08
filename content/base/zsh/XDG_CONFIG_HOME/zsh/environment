@@ -1,8 +1,9 @@
+export USER_BINARY_DIR="$HOME/.local/bin"
+
 # PATH
-if [ -z "$USER_BINARY_DIR" ]
+if [ -z "$USERPATH" ]
 then
-    export USER_BINARY_DIR="$HOME/.local/bin"
-    export USERPATH="$(find -L "$USER_BINARY_DIR" -path "*/.*" -prune -o -type d -print | tr '\n' ':' | head -c -1)"
+    export USERPATH="$USER_BINARY_DIR:$USER_BINARY_DIR/local"
     export PATH="$PATH:$USERPATH"
 fi
 

@@ -1,0 +1,44 @@
+post_install ()
+{
+    cd /var/lib/dot-files/users
+    echo ===============================================================================
+    for id in $(find . -type f -printf '%P\n')
+    do
+        sudo -u "#$id" dot-files.sh install
+        echo ===============================================================================
+    done
+}
+
+pre_upgrade ()
+{
+    cd /var/lib/dot-files/users
+    echo ===============================================================================
+    for id in $(find . -type f -printf '%P\n')
+    do
+        sudo -u "#$id" dot-files.sh reinstall pre
+        echo ===============================================================================
+    done
+}
+
+post_upgrade ()
+{
+    cd /var/lib/dot-files/users
+    echo ===============================================================================
+    for id in $(find . -type f -printf '%P\n')
+    do
+        sudo -u "#$id" dot-files.sh reinstall post
+        echo ===============================================================================
+    done
+}
+
+pre_remove ()
+{
+    cd /var/lib/dot-files/users
+    echo ===============================================================================
+    for id in $(find . -type f -printf '%P\n')
+    do
+        sudo -u "#$id" dot-files.sh uninstall
+        echo ===============================================================================
+    done
+}
+
