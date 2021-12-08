@@ -18,7 +18,7 @@ install=dot-files.install
 prepare ()
 {
     : ${DOT_FILES_DIR:="../content"}
-    : ${DOT_FILES_PKG_PREPARE:-"../pkg_prepare"}
+    : ${DOT_FILES_PKG_PREPARE:="../pkg_prepare"}
 
     # check dot-files directory existence
     [ -d "$DOT_FILES_DIR" ] || { echo "DOT_FILES_DIR is not a directory"; exit 1; }
