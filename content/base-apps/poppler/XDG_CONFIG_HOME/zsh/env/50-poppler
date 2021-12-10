@@ -1,3 +1,3 @@
-: ${PDFVIEWER:="pdfpager.sh"}
-export PDFVIEWER
+: ${TERM_PDFVIEWER="pdfpager.sh"}
+export TERM_PDFVIEWER
 

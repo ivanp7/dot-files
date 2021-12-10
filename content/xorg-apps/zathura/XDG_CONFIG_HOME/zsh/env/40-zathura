@@ -1,6 +1,6 @@
 if [ "$DISPLAY" ]
 then
-    : ${PDFVIEWER:="scratchpad-zathura.sh"}
-    export PDFVIEWER
+    : ${GUI_PDFVIEWER:="scratchpad-zathura.sh"}
+    export GUI_PDFVIEWER
 fi
 

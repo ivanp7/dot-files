@@ -1,6 +1,6 @@
 #!/bin/sh
 
-FLAG_FILE="$TMPDIR_CURRENT/mouse_buttons_swapped"
+FLAG_FILE="$TMPDIR_SESSION/mouse_buttons_swapped"
 
 normal ()
 {

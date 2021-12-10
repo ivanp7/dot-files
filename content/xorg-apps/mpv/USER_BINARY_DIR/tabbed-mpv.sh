@@ -1,7 +1,6 @@
 #!/bin/sh
 
-: ${TABBED_XID:="$(tabbed.sh)"}
-export TABBED_XID
-
-exec mpv.sh --wid "$TABBED_XID" "$@"
+: ${TABBED_CLASS:="mpv_$(($(xdotool get_desktop)+1))"}
+export TABBED_CLASS
+exec mpv.sh --wid="$(TABBED_COMMAND_XID_ARG= tabbed.sh)" "$@"
 

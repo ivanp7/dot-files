@@ -3,7 +3,7 @@
 [ "$TERM" = "linux" ] || exit
 
 # request display of shell info
-PIDFILE="$TMPDIR_CURRENT/shell_info/$(tty)/$PARENT_SHELL_PID_EXPORTED"
+PIDFILE="$TMPDIR_SESSION/shell_info/$(tty)/$PARENT_SHELL_PID_EXPORTED"
 [ -n "$PARENT_SHELL_PID_EXPORTED" -a -f "$PIDFILE" ] && rm "$PIDFILE" || true
 
 : ${FBTERM_WALLPAPER:="$HOME/wallpapers/fbterm"}

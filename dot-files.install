@@ -1,43 +1,45 @@
+PACKAGE_NAME=dot-files
+
 post_install ()
 {
-    cd /var/lib/dot-files/users
+    cd -- "/var/lib/$PACKAGE_NAME/users"
     echo ===============================================================================
     for id in $(find . -type f -printf '%P\n')
     do
-        sudo -u "#$id" dot-files.sh install
+        sudo -u "#$id" "$PACKAGE_NAME.sh" install
         echo ===============================================================================
     done
 }
 
 pre_upgrade ()
 {
-    cd /var/lib/dot-files/users
+    cd "/var/lib/$PACKAGE_NAME/users"
     echo ===============================================================================
     for id in $(find . -type f -printf '%P\n')
     do
-        sudo -u "#$id" dot-files.sh reinstall pre
+        sudo -u "#$id" "$PACKAGE_NAME.sh" reinstall pre
         echo ===============================================================================
     done
 }
 
 post_upgrade ()
 {
-    cd /var/lib/dot-files/users
+    cd "/var/lib/$PACKAGE_NAME/users"
     echo ===============================================================================
     for id in $(find . -type f -printf '%P\n')
     do
-        sudo -u "#$id" dot-files.sh reinstall post
+        sudo -u "#$id" "$PACKAGE_NAME.sh" reinstall post
         echo ===============================================================================
     done
 }
 
 pre_remove ()
 {
-    cd /var/lib/dot-files/users
+    cd "/var/lib/$PACKAGE_NAME/users"
     echo ===============================================================================
     for id in $(find . -type f -printf '%P\n')
     do
-        sudo -u "#$id" dot-files.sh uninstall
+        sudo -u "#$id" "$PACKAGE_NAME.sh" uninstall
         echo ===============================================================================
     done
 }

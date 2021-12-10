@@ -8,7 +8,10 @@ shift 3
 SCRIPT="$XDG_CONFIG_HOME/bspwm/rules/$CLASS_NAME.sh"
 
 if [ -x "$SCRIPT" ]
-then exec "$SCRIPT" "$WINDOW_ID" "$INSTANCE_NAME" "$@"
-else echo "$@"
+then
+    # executing $SHELL to update the environment
+    exec "$SHELL" -c "exec \"$SCRIPT\" \"$WINDOW_ID\" \"$INSTANCE_NAME\" \"$@\""
+else
+    echo "$@"
 fi
 

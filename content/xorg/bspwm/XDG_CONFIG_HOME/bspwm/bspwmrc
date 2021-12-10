@@ -1,5 +1,13 @@
 #! /bin/sh
 
+# update the environment by restarting this script using $SHELL
+if [ -z "$BSPWM_RUN" ]
+then
+    export BSPWM_RUN=true
+    exec "$SHELL" "$0"
+fi
+unset BSPWM_RUN
+
 #
 # Bspwm configuration
 #

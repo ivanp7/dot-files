@@ -6,7 +6,7 @@ arch=('any')
 license=('Unlicense')
 depends=(coreutils sudo)
 
-pkgver=2021.12.08
+pkgver=2021.12.10
 pkgrel=1
 pkgver ()
 {
@@ -57,9 +57,9 @@ prepare ()
 
 package ()
 {
-    DOT_FILES_DIR="/usr/share/dot-files"
-    REGISTRY_DIR="/var/lib/dot-files/users"
-    SCRIPT_FILE="dot-files.sh"
+    DOT_FILES_DIR="/usr/share/$pkgname"
+    REGISTRY_DIR="/var/lib/$pkgname/users"
+    SCRIPT_FILE="$pkgname.sh"
 
     # create package tree
     mkdir -p -- "$pkgdir/$DOT_FILES_DIR"
@@ -118,7 +118,7 @@ case "\$OP" in
     install)
         if user_registered
         then
-            echo "Cannot \$OP: dot-files are already installed for user '\$(id -un)'." 1>&2
+            echo "Cannot \$OP: $pkgname are already installed for user '\$(id -un)'." 1>&2
             exit 1
         fi
         ;;
@@ -126,7 +126,7 @@ case "\$OP" in
     reinstall|uninstall|update)
         if ! user_registered
         then
-            echo "Cannot \$OP: dot-files are not yet installed for user '\$(id -un)'." 1>&2
+            echo "Cannot \$OP: $pkgname are not yet installed for user '\$(id -un)'." 1>&2
             exit 1
         fi
         ;;

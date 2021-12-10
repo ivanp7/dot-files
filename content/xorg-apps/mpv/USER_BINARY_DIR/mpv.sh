@@ -1,4 +1,4 @@
 #!/bin/sh
 
-setsid -f $VIDEO_ACCELERATOR mpv $MPV_OPTIONS "$@" > /dev/null 2>&1 &
+setsid -f mpv-wrapper.sh "$@" > /dev/null 2>&1 &
 

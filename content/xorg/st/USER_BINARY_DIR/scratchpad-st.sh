@@ -1,6 +1,7 @@
 #!/bin/sh
 
-: ${SCRATCHPAD:=${SCRATCHPAD_ST:=0}}
+: ${SCRATCHPAD:=${SCRATCHPAD_ST:-0}}
+export TABBED_CLASS="scratchpad_$SCRATCHPAD"
+tabbed-st.sh "$@"
 bspwm-scratchpad.sh "scratchpad_$SCRATCHPAD" show
-TABBED_XID="$(cat "$SCRATCHPAD_DIR/$SCRATCHPAD" 2> /dev/null)" exec tabbed-st.sh "$@"
 

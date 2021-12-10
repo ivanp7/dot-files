@@ -1,7 +1,6 @@
 #!/bin/sh
 
-: ${TABBED_XID:="$(tabbed.sh)"}
-export TABBED_XID
-
-exec st.sh -w "$TABBED_XID" "$@"
+: ${TABBED_CLASS:="st_$(($(xdotool get_desktop)+1))"}
+export TABBED_CLASS
+TABBED_COMMAND_XID_ARG=2 exec tabbed.sh st -w xid "$@"
 

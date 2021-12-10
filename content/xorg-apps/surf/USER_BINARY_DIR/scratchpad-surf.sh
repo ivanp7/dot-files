@@ -1,6 +1,7 @@
 #!/bin/sh
 
-: ${SCRATCHPAD:=${SCRATCHPAD_SURF:=5}}
+: ${SCRATCHPAD:=${SCRATCHPAD_SURF:-0}}
+export TABBED_CLASS="scratchpad_$SCRATCHPAD"
+tabbed-surf.sh "$@"
 bspwm-scratchpad.sh "scratchpad_$SCRATCHPAD" show
-TABBED_XID="$(cat "$SCRATCHPAD_DIR/$SCRATCHPAD" 2> /dev/null)" exec tabbed-surf.sh "$@"
 

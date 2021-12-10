@@ -1,8 +1,0 @@
-if [ "$DISPLAY" ]
-then
-    export SCRATCHPAD12_WIDTH=420
-    export SCRATCHPAD12_HEIGHT=150
-    export SCRATCHPAD12_X=-10
-    export SCRATCHPAD12_Y=-25
-fi
-

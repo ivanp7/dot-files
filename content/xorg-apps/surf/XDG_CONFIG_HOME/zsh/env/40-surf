@@ -1,9 +1,6 @@
 if [ "$DISPLAY" ]
 then
-    : ${BROWSER:="scratchpad-surf.sh"}
-    export BROWSER
-
-    export SCRATCHPAD5_WIDTH=$(($MONITOR_WIDTH - 25))
-    export SCRATCHPAD5_HEIGHT=$(($MONITOR_HEIGHT - 50))
+    : ${GUI_BROWSER:="scratchpad-surf.sh"}
+    export GUI_BROWSER
 fi
 

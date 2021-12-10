@@ -1,22 +1,29 @@
 #!/bin/sh
 
-: ${SXHKD_GENERATED_CONFIG:="00-dot-files"}
+: ${GENERATED_CONFIG:="00-dot-files"}
 
-[ -d "XDG_CONFIG_HOME/sxhkd/conf" ] || exit
+consolidate ()
+{
+    [ -d "$1" ] || return 0
 
-cd "XDG_CONFIG_HOME/sxhkd/conf"
+    cd "$1"
 
-[ -f "$SXHKD_GENERATED_CONFIG" ] && rm -f "$SXHKD_GENERATED_CONFIG"
+    [ -f "$GENERATED_CONFIG" ] && rm -f "$GENERATED_CONFIG"
 
-for config in $(find . -type f -printf '%P\n' | sort)
-do
-    echo "# $config {{{" >> "$SXHKD_GENERATED_CONFIG"
-    echo >> "$SXHKD_GENERATED_CONFIG"
-    cat "$config" >> "$SXHKD_GENERATED_CONFIG"
-    rm -f "$config"
-    echo "# }}}" >> "$SXHKD_GENERATED_CONFIG"
-done
+    for config in $(find . -type f -printf '%P\n' | sort)
+    do
+        echo "# $config {{{" >> "$GENERATED_CONFIG"
+        echo >> "$GENERATED_CONFIG"
+        cat "$config" >> "$GENERATED_CONFIG"
+        rm -f "$config"
+        echo "# }}}" >> "$GENERATED_CONFIG"
+    done
 
-echo "" >> "$SXHKD_GENERATED_CONFIG"
-echo "# vim: foldmethod=marker:" >> "$SXHKD_GENERATED_CONFIG"
+    echo "" >> "$GENERATED_CONFIG"
+    echo "# vim: foldmethod=marker:" >> "$GENERATED_CONFIG"
+
+    cd -- "$OLDPWD"
+}
+
+consolidate "XDG_CONFIG_HOME/sxhkd/conf"
 

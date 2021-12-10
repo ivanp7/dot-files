@@ -4,7 +4,13 @@ WINDOW_ID="$1"
 INSTANCE_NAME="$2"
 shift 2
 
-bspwm-monitor-info.sh area | read MONITOR_WIDTH MONITOR_HEIGHT MONITOR_X MONITOR_Y
+MONITOR_AREA="$(bspwm-monitor-info.sh area)"
+MONITOR_WIDTH="${MONITOR_AREA%% *}"
+MONITOR_AREA="${MONITOR_AREA#* }"
+MONITOR_HEIGHT="${MONITOR_AREA%% *}"
+MONITOR_AREA="${MONITOR_AREA#* }"
+MONITOR_X="${MONITOR_AREA%% *}"
+MONITOR_Y="${MONITOR_AREA#* }"
 
 : ${WIDTH:=$(($MONITOR_WIDTH * 3 / 4))}
 : ${HEIGHT:=$(($MONITOR_HEIGHT * 3 / 4))}
@@ -14,5 +20,5 @@ bspwm-monitor-info.sh area | read MONITOR_WIDTH MONITOR_HEIGHT MONITOR_X MONITOR
 
 RECTANGLE="${WIDTH}x${HEIGHT}+${X}+${Y}"
 
-echo "$@" "state=floating rectangle=$RECTANGLE"
+echo "state=floating rectangle=$RECTANGLE" "$@"
 

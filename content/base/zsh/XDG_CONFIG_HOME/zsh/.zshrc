@@ -4,13 +4,7 @@ PARENT_SHELL_PID=$PARENT_SHELL_PID_EXPORTED
 export PARENT_SHELL_PID_EXPORTED=$$
 
 _pstree="$(exec pstree -ls $$)"
-_pstree="$(echo "$_pstree" | head -1 | sed -E "
-s/-(-|[+])-/---/g;
-s/^---//;
-s/---pstree$//;
-s/sshd(---sshd)*/(ssh)/g;
-s/tmux: server/(tmux)/g; s/screen(---screen)*/(screen)/g;
-")"
+_pstree="$(echo "$_pstree" | head -1 | sed -E "s/-(-|[+])-/---/g; s/^---//; s/---pstree$//$ZSH_SHELL_INFO_PSTREE_SED")"
 
 _colors=$(tput colors)
 

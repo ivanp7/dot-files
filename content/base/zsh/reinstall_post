@@ -1,0 +1,15 @@
+###############################################################################
+# base/zsh
+###############################################################################
+
+: ${XDG_DOWNLOAD_DIR:="$HOME/Downloads"}
+
+sed -i "s@XDG_DOWNLOAD_DIR@$XDG_DOWNLOAD_DIR@g"         "$XDG_CONFIG_HOME/user-dirs.dirs"
+sed -i "s@XDG_DESKTOP_DIR@$XDG_DESKTOP_DIR@g"           "$XDG_CONFIG_HOME/user-dirs.dirs"
+sed -i "s@XDG_PICTURES_DIR@$XDG_PICTURES_DIR@g"         "$XDG_CONFIG_HOME/user-dirs.dirs"
+sed -i "s@XDG_MUSIC_DIR@$XDG_MUSIC_DIR@g"               "$XDG_CONFIG_HOME/user-dirs.dirs"
+sed -i "s@XDG_VIDEOS_DIR@$XDG_VIDEOS_DIR@g"             "$XDG_CONFIG_HOME/user-dirs.dirs"
+sed -i "s@XDG_DOCUMENTS_DIR@$XDG_DOCUMENTS_DIR@g"       "$XDG_CONFIG_HOME/user-dirs.dirs"
+sed -i "s@XDG_PUBLICSHARE_DIR@$XDG_PUBLICSHARE_DIR@g"   "$XDG_CONFIG_HOME/user-dirs.dirs"
+sed -i "s@XDG_TEMPLATES_DIR@$XDG_TEMPLATES_DIR@g"       "$XDG_CONFIG_HOME/user-dirs.dirs"
+

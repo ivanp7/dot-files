@@ -4,18 +4,6 @@
 
 [ -z "$_p_root" ] && _p_prompt_character="$" || _p_prompt_character="#"
 
-[ "$_p_interactive_shells" ] &&
-    export _p_interactive_shells="${_p_interactive_shells}${_p_prompt_character}" ||
-    export _p_interactive_shells="${_p_prompt_character}"
-
-[ -n "$PARENT_SHELL_PID" -a -f "$TMPDIR_CURRENT/pid/$TTY/$PARENT_SHELL_PID" ] &&
-    export _p_interactive_shells_this_tty=$(($_p_interactive_shells_this_tty + 1)) ||
-    export _p_interactive_shells_this_tty=1
-
-[ "${#_p_interactive_shells}" -ne "$_p_interactive_shells_this_tty" ] &&
-    _p_intsh_indicator="${_p_interactive_shells:0:-${_p_interactive_shells_this_tty}}+${_p_interactive_shells: -${_p_interactive_shells_this_tty}}" ||
-    _p_intsh_indicator="$_p_interactive_shells"
-
 # }}}
 # Color theme {{{
 
@@ -113,11 +101,10 @@ _p_shell_info_f ()
 {
     local Dot="·"
 
-    local PromptStatus="$STATUS "
-    [ "$PromptStatus" = " " ] && local PromptStatus=
+    local PromptStatus="$STATUS${STATUS:+" "}"
 
-    _p_shell_info_length=$((1 + ${#_p_intsh_indicator} + 1 + ${#_p_command_number} + 1 + ${#PromptStatus}))
-    _p_shell_info="${_p_shell_info_color} ${_p_intsh_indicator}${Dot}${_p_command_number}${_p_shell_status_color} ${PromptStatus}"
+    _p_shell_info_length=$((1 + ${#_p_command_number} + 1 + ${#PromptStatus}))
+    _p_shell_info="${_p_shell_info_color} ${_p_command_number}${_p_shell_status_color} ${PromptStatus}"
 
     _p_next_triangle_color="$_p_shell_info_color_triangle"
 }
@@ -506,9 +493,9 @@ _p_prompt ()
 {
     echo "${_color_reset}"
 
-    if [ ! -f "$TMPDIR_CURRENT/shell_info/$TTY/$$" ]
+    if [ ! -f "$TMPDIR_SESSION/shell_info/$TTY/$$" ]
     then
-        touch -- "$TMPDIR_CURRENT/shell_info/$TTY/$$"
+        touch -- "$TMPDIR_SESSION/shell_info/$TTY/$$"
         separator
         shell_info
         echo

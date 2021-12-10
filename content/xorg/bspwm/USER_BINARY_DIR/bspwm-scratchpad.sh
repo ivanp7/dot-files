@@ -9,7 +9,7 @@ case "$2" in
     *) act="" ;;
 esac
 
-for pid in $(xdotool search --class "$CLASS")
+for pid in $(xdotool search --class "^$CLASS\$")
 do
     bspc node $pid --flag hidden$act --focus
 done

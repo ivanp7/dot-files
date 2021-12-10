@@ -6,7 +6,13 @@ shift 2
 
 if [ -z "$RECTANGLE" ]
 then
-    bspwm-monitor-info.sh area | read MONITOR_WIDTH MONITOR_HEIGHT MONITOR_X MONITOR_Y
+    MONITOR_AREA="$(bspwm-monitor-info.sh area)"
+    MONITOR_WIDTH="${MONITOR_AREA%% *}"
+    MONITOR_AREA="${MONITOR_AREA#* }"
+    MONITOR_HEIGHT="${MONITOR_AREA%% *}"
+    MONITOR_AREA="${MONITOR_AREA#* }"
+    MONITOR_X="${MONITOR_AREA%% *}"
+    MONITOR_Y="${MONITOR_AREA#* }"
 
     : ${WIDTH:=$(($MONITOR_WIDTH * 3 / 4))}
     : ${HEIGHT:=$(($MONITOR_HEIGHT * 3 / 4))}
@@ -20,5 +26,5 @@ then
     RECTANGLE="${WIDTH}x${HEIGHT}+${X}+${Y}"
 fi
 
-echo "$@" "sticky=on locked=on state=floating hidden=on rectangle=$RECTANGLE"
+echo "sticky=on locked=on state=floating rectangle=$RECTANGLE" "$@"
 

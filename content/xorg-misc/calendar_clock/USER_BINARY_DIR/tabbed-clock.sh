@@ -1,7 +1,6 @@
 #!/bin/sh
 
-: ${TABBED_XID:="$(tabbed.sh)"}
-export TABBED_XID
-
-exec st -w "$TABBED_XID" -t "clock" -e clock.sh
+: ${TABBED_CLASS:="status_$(($(xdotool get_desktop)+1))"}
+export TABBED_CLASS
+exec st.sh -w "$(TABBED_COMMAND_XID_ARG= tabbed.sh)" -t "clock" -e clock.sh
 

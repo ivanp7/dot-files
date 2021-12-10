@@ -1,0 +1,6 @@
+if [ "$DISPLAY" ]
+then
+    : ${GUI_VIEWER:="scratchpad-nsxiv.sh"}
+    export GUI_VIEWER
+fi
+

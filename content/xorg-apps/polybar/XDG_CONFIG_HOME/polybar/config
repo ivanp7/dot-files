@@ -208,7 +208,7 @@ click-left = volume.sh next
 click-right = volume.sh prev
 
 format-prefix = "SINK "
-format-foreground = ${colors.foreground-alt}
+format-prefix-foreground = ${colors.foreground-alt}
 
 ; }}}
 ; module/pulseaudio {{{

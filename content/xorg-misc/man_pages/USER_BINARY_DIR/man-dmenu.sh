@@ -10,9 +10,9 @@ touch "$HISTORY_FILE"
 INPUT=$(tac "$HISTORY_FILE" | uniq | dmenu.sh -p "$DMENU_PROMPT" -l $DMENU_LINES -g $DMENU_COLUMNS | head -1)
 [ -z "$INPUT" ] && exit
 
-: ${SCRATCHPAD:=9}
+: ${SCRATCHPAD:=${SCRATCHPAD_MAN:-0}}
 export SCRATCHPAD
-exec scratchpad-st.sh -t "$INPUT" -e man $INPUT
+scratchpad-st.sh -t "$INPUT" -e man $INPUT
 
 { grep -Fv "$INPUT" "$HISTORY_FILE"; echo "$INPUT"; } | sponge "$HISTORY_FILE"
 

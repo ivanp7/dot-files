@@ -1,0 +1,6 @@
+if [ "$DISPLAY" ]
+then
+    export VIDEO_ACCELERATOR="prime-run"
+    export MPV_OPTIONS="--vo=gpu --hwdec=auto"
+fi
+

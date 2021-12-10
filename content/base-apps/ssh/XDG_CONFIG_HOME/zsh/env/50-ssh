@@ -1,0 +1,6 @@
+if [ -z "$ZSH_SHELL_INFO_PSTREE_SED_SSH" ]
+then
+    export ZSH_SHELL_INFO_PSTREE_SED_SSH="s/sshd(---sshd)*/(ssh)/g"
+    export ZSH_SHELL_INFO_PSTREE_SED="$ZSH_SHELL_INFO_PSTREE_SED; $ZSH_SHELL_INFO_PSTREE_SED_SSH"
+fi
+

@@ -1,10 +1,7 @@
 #!/bin/sh
 
-WINDOW_ID=$(bspc query -N -n .marked)
-[ -z "$WINDOW_ID" ] &&
-    WINDOW_ID=$(bspc query -N -n .focused)
-for wid in $WINDOW_ID
-do 
+for wid in $(bspc query -N -n .focused)
+do
     bspc node $wid --flag hidden=on --flag marked=off
 done
 

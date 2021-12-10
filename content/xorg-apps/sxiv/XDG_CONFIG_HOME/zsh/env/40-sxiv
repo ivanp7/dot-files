@@ -1,6 +1,0 @@
-if [ "$DISPLAY" ]
-then
-    : ${VIEWER:="scratchpad-sxiv.sh"}
-    export VIEWER
-fi
-

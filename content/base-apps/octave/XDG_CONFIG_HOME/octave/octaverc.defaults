@@ -2,8 +2,6 @@ source /usr/share/octave/site/m/startup/octaverc;
 pkg prefix XDG_DATA_HOME/octave/packages XDG_DATA_HOME/octave/packages;
 pkg local_list XDG_DATA_HOME/octave/octave_packages;
 
-graphics_toolkit('fltk')
-
 edit mode sync
 edit home .
 EDITOR('nvim > /dev/tty 2>&1 < /dev/tty %s')

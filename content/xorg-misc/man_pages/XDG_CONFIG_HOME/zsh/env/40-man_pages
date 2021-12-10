@@ -1,6 +1,0 @@
-if [ "$DISPLAY" ]
-then
-    export SCRATCHPAD9_WIDTH=800
-    export SCRATCHPAD9_HEIGHT=$(($MONITOR_HEIGHT * 19 / 20))
-fi
-

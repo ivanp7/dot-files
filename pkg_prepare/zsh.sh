@@ -1,26 +1,26 @@
 #!/bin/sh
 
-: ${ZSH_GENERATED_CONFIG:="00-dot-files"}
+: ${GENERATED_CONFIG:="00-dot-files"}
 
 consolidate ()
 {
-    [ -d "$1" ] || return
+    [ -d "$1" ] || return 0
 
     cd "$1"
 
-    [ -f "$ZSH_GENERATED_CONFIG" ] && rm -f "$ZSH_GENERATED_CONFIG"
+    [ -f "$GENERATED_CONFIG" ] && rm -f "$GENERATED_CONFIG"
 
     for config in $(find . -type f -printf '%P\n' | sort)
     do
-        echo "# $config {{{" >> "$ZSH_GENERATED_CONFIG"
-        echo >> "$ZSH_GENERATED_CONFIG"
-        cat "$config" >> "$ZSH_GENERATED_CONFIG"
+        echo "# $config {{{" >> "$GENERATED_CONFIG"
+        echo >> "$GENERATED_CONFIG"
+        cat "$config" >> "$GENERATED_CONFIG"
         rm -f "$config"
-        echo "# }}}" >> "$ZSH_GENERATED_CONFIG"
+        echo "# }}}" >> "$GENERATED_CONFIG"
     done
 
-    echo "" >> "$ZSH_GENERATED_CONFIG"
-    echo "# vim: foldmethod=marker:" >> "$ZSH_GENERATED_CONFIG"
+    echo "" >> "$GENERATED_CONFIG"
+    echo "# vim: foldmethod=marker:" >> "$GENERATED_CONFIG"
 
     cd -- "$OLDPWD"
 }

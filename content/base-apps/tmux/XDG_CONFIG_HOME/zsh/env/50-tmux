@@ -1,0 +1,6 @@
+if [ -z "$ZSH_SHELL_INFO_PSTREE_SED_TMUX" ]
+then
+    export ZSH_SHELL_INFO_PSTREE_SED_TMUX="s/tmux: server/(tmux)/g"
+    export ZSH_SHELL_INFO_PSTREE_SED="$ZSH_SHELL_INFO_PSTREE_SED; $ZSH_SHELL_INFO_PSTREE_SED_TMUX"
+fi
+
