@@ -1,8 +1,0 @@
-# make screenshot
-{_,ctrl + }{_,shift + } Print
-    {CAPTURE_DIRECTORY="screenshot/full" screenshot.sh,CAPTURE_DIRECTORY="screenshot/area" screenshot.sh -s -u} {| clip.sh image/png, }
-
-# make screencast
-super + {_,shift + }{_,ctrl + } Print
-    capture-async.sh {screen,screen/mic} {"#","+"}
-

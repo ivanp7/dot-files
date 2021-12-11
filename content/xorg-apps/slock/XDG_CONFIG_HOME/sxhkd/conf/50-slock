@@ -1,8 +1,0 @@
-# lock screen
-super + Home
-    lock-screen.sh -force
-
-# power control
-super + Pause
-    lock-screen.sh suspend.sh
-

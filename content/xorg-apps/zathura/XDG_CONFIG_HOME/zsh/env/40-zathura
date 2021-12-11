@@ -1,6 +1,0 @@
-if [ "$DISPLAY" ]
-then
-    : ${GUI_PDFVIEWER:="scratchpad-zathura.sh"}
-    export GUI_PDFVIEWER
-fi
-

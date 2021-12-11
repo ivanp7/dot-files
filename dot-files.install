@@ -1,4 +1,4 @@
-PACKAGE_NAME=dot-files
+PACKAGE_NAME=dot-files-root
 
 post_install ()
 {

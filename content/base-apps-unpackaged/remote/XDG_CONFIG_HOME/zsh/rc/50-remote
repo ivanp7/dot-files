@@ -1,7 +1,0 @@
-remote_ ()
-{
-    remote "$@" && { echo; separator; shell_info; }
-}
-
-alias remote='remote_ '
-

@@ -1,7 +1,7 @@
 # Maintainer : Ivan Podmazov <ivanpzv [eight] at gmail com>
 
-pkgname=dot-files
-pkgdesc="Auto-managed dot-files"
+pkgname=dot-files-root
+pkgdesc="Auto-managed dot-files (for root)"
 arch=('any')
 license=('Unlicense')
 depends=(coreutils sudo)

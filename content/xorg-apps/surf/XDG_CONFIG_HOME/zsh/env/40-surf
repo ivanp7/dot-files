@@ -1,6 +1,0 @@
-if [ "$DISPLAY" ]
-then
-    : ${GUI_BROWSER:="scratchpad-surf.sh"}
-    export GUI_BROWSER
-fi
-
