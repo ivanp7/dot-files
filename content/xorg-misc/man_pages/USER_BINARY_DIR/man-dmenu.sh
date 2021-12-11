@@ -10,9 +10,8 @@ touch "$HISTORY_FILE"
 INPUT=$(tac "$HISTORY_FILE" | uniq | dmenu.sh -p "$DMENU_PROMPT" -l $DMENU_LINES -g $DMENU_COLUMNS | head -1)
 [ -z "$INPUT" ] && exit
 
-: ${SCRATCHPAD:=${SCRATCHPAD_MAN:-0}}
-export SCRATCHPAD
-scratchpad-st.sh -t "$INPUT" -e man $INPUT
+export TABBED_CLASS="scratchpad_${SCRATCHPAD_MAN:-0}"
+st.sh -w "$(TABBED_COMMAND_XID_ARG= tabbed.sh)" -t "$INPUT" -e man $INPUT
 
 { grep -Fv "$INPUT" "$HISTORY_FILE"; echo "$INPUT"; } | sponge "$HISTORY_FILE"
 

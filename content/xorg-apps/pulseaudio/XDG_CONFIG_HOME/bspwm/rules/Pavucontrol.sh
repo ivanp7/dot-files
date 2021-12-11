@@ -20,5 +20,5 @@ MONITOR_Y="${MONITOR_AREA#* }"
 
 RECTANGLE="${WIDTH}x${HEIGHT}+${X}+${Y}"
 
-echo "state=floating rectangle=$RECTANGLE" "$@"
+echo "state=floating rectangle=$RECTANGLE"
 

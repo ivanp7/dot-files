@@ -13,9 +13,8 @@ INPUT=$(tac "$HISTORY_FILE" | uniq | dmenu -p "$DMENU_PROMPT" -l $DMENU_LINES -g
 OUTPUT_FILE=$(mktemp -p /tmp dictionary.XXXXXXXX)
 dictionary.sh -n "$INPUT" > "$OUTPUT_FILE"
 
-: ${SCRATCHPAD:=${SCRATCHPAD_DICT:-0}}
-export SCRATCHPAD
-exec scratchpad-st.sh -t "$(echo "$INPUT" | sed "
+export TABBED_CLASS="scratchpad_${SCRATCHPAD_DICT:-0}"
+st.sh -w "$(TABBED_COMMAND_XID_ARG= tabbed.sh)" -t "$(echo "$INPUT" | sed "
 s/А/A/g;   s/а/a/g;
 s/Б/B/g;   s/б/b/g;
 s/В/V/g;   s/в/v/g;

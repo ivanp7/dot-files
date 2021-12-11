@@ -26,5 +26,5 @@ then
     RECTANGLE="${WIDTH}x${HEIGHT}+${X}+${Y}"
 fi
 
-echo "sticky=on locked=on state=floating rectangle=$RECTANGLE" "$@"
+echo "state=floating sticky=on locked=on rectangle=$RECTANGLE"
 

@@ -1,7 +1,7 @@
 # This is Git's per-user configuration file.
 [core]
-    pager = nvimpager
-    editor = nvim
+    pager = nvimpager.sh
+    editor = nvim.sh
 
 [alias]
     dif = difftool
@@ -9,20 +9,20 @@
     ctags = !.git/hooks/ctags
 
 [diff]
-    tool = nvim
+    tool = nvim.sh
 [difftool]
     prompt = false
     trustExitCode = true
 [difftool "nvim"]
-    cmd = nvim -d "$LOCAL" "$REMOTE" -c 'wincmd w'
+    cmd = nvim.sh -d "$LOCAL" "$REMOTE" -c 'wincmd w'
 
 [merge]
-    tool = nvim
+    tool = nvim.sh
 [mergetool]
     prompt = false
     trustExitCode = true
 [mergetool "nvim"]
-    cmd = nvim -d "$LOCAL" "$MERGED" "$BASE" "$REMOTE" -c 'wincmd w' -c 'wincmd J'
+    cmd = nvim.sh -d "$LOCAL" "$MERGED" "$BASE" "$REMOTE" -c 'wincmd w' -c 'wincmd J'
 
 [pull]
     rebase = false
