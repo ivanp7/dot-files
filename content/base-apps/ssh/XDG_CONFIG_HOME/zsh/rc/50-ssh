@@ -20,7 +20,7 @@ spawn ssh-add
 expect "Enter passphrase for /home/$username/.ssh/id_rsa: "
 send "$password\n";
 expect "Identity added: /home/$username/.ssh/id_rsa (/home/$username/.ssh/id_rsa)"
-                    ' | expect -f - "$USER" "$_SSH_ADD_PASSPHRASE"
+' | expect - "$USER" "$_SSH_ADD_PASSPHRASE"
                 else
                     ssh-add
         fi
