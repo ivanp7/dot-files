@@ -138,5 +138,13 @@ bdrm ()
 }
 
 # }}}
+# set_title {{{
+
+set_title ()
+{
+    echo -en "\033]0;$@\a"
+}
+
+# }}}
 
 # vim: ft=zsh: foldmethod=marker:
