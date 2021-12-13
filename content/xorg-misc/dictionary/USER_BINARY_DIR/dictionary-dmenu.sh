@@ -14,6 +14,7 @@ OUTPUT_FILE=$(mktemp -p /tmp dictionary.XXXXXXXX)
 dictionary.sh -n "$INPUT" > "$OUTPUT_FILE"
 
 export TABBED_CLASS="scratchpad_${SCRATCHPAD_DICT:-0}"
+bspwm-scratchpad.sh "scratchpad_${SCRATCHPAD_DICT:-0}" show
 st.sh -w "$(TABBED_COMMAND_XID_ARG= tabbed.sh)" -t "$(echo "$INPUT" | sed "
 s/А/A/g;   s/а/a/g;
 s/Б/B/g;   s/б/b/g;
