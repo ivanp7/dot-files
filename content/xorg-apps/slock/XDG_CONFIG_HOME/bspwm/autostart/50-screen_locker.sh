@@ -1,7 +1,7 @@
 #!/bin/sh
 
 CHECK_INTERVAL=60
-STATUS_FILE="/tmp/no-screen-lock_$USER"
+STATUS_FILE="$TMPDIR_SESSION/screen-lock.disabled"
 
 while true
 do
@@ -16,7 +16,7 @@ do
 
     if [ ! -f "$STATUS_FILE" -a "$(xssstate -t)" -eq 0 ]
     then
-        date >> /tmp/screen-lock_$USER.log
+        date >> "$TMPDIR_SESSION/screen-lock.log"
         lock-screen.sh
     fi
 done

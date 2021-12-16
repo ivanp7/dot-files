@@ -11,14 +11,15 @@ lock_screen ()
     # lock
     slock
 
-    # restore keymap
-    xmodmap "$XDG_CONFIG_HOME/X11/xmodmap"
+    # reapply keymaps
+    for file in $(find "$XDG_CONFIG_HOME/X11/xmodmap" -type f 2> /dev/null)
+    do xmodmap "$file"; done
 }
 
-STATUS_FILE="/tmp/no-screen-lock_$USER"
+STATUS_FILE="$TMPDIR_SESSION/screen-lock.disabled"
 case "$1" in
-    -on) rm $STATUS_FILE ;;
-    -off) touch $STATUS_FILE ;;
+    -on) rm -f -- "$STATUS_FILE" ;;
+    -off) touch -- "$STATUS_FILE" ;;
     -force) shift 1; lock_screen & $@ ;;
     -*) [ -f "$STATUS_FILE" ] && echo disabled || echo enabled ;;
     *) [ -f "$STATUS_FILE" ] || lock_screen & $@
