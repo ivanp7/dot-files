@@ -17,11 +17,14 @@ lock_screen ()
 }
 
 STATUS_FILE="$TMPDIR_SESSION/screen-lock.disabled"
+
 case "$1" in
     -on) rm -f -- "$STATUS_FILE" ;;
     -off) touch -- "$STATUS_FILE" ;;
-    -force) shift 1; lock_screen & $@ ;;
-    -*) [ -f "$STATUS_FILE" ] && echo disabled || echo enabled ;;
-    *) [ -f "$STATUS_FILE" ] || lock_screen & $@
+    "") [ -f "$STATUS_FILE" ] || lock_screen ;;
+    -force) lock_screen ;;
+    -async) shift 1; [ -f "$STATUS_FILE" ] || lock_screen & "$@" ;;
+    -async-force) shift 1; lock_screen & "$@" ;;
+    *) [ -f "$STATUS_FILE" ] && echo "disabled" || echo "enabled" ;;
 esac
 
