@@ -235,4 +235,3 @@ super + {KP_Add,KP_Subtract}
 
 # }}}
 
-# vim: foldmethod=marker:
