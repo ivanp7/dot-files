@@ -200,7 +200,7 @@ format-charging-prefix = "BAT2 "
 ; module/audiosink {{{
 [module/audiosink]
 type = custom/script
-exec = pactl info | grep "^Default Sink:" | sed 's/^.*\salsa_output\.//' | head -c 20
+exec = pactl info | grep "^Default Sink:" | sed 's/^.*\\salsa_output\\.//' | head -c 20
 tail = false
 interval = 1
 
