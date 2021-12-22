@@ -1,0 +1,6 @@
+if [ -z "$ROSWELL_PATH" ]
+then
+    export ROSWELL_PATH="$HOME/.roswell/bin"
+    export PATH="$PATH:$ROSWELL_PATH"
+fi
+
