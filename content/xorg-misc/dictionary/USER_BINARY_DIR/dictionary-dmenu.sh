@@ -1,16 +1,17 @@
 #!/bin/sh
 
-DMENU_PROMPT=Word
+DMENU_PROMPT="Word"
 DMENU_LINES=10
 DMENU_COLUMNS=10
 
 HISTORY_FILE="$SDCV_HISTFILE"
-touch "$HISTORY_FILE"
+touch -- "$HISTORY_FILE"
 
-INPUT=$(tac "$HISTORY_FILE" | uniq | dmenu -p "$DMENU_PROMPT" -l $DMENU_LINES -g $DMENU_COLUMNS | head -1)
+INPUT=$(tac -- "$HISTORY_FILE" | uniq | dmenu -p "$DMENU_PROMPT" -l $DMENU_LINES -g $DMENU_COLUMNS | head -1)
 [ -z "$INPUT" ] && exit
 
 OUTPUT_FILE=$(mktemp -p /tmp dictionary.XXXXXXXX)
+trap 'rm -f -- "$OUTPUT_FILE"' EXIT
 dictionary.sh -n "$INPUT" > "$OUTPUT_FILE"
 
 export TABBED_CLASS="scratchpad_${SCRATCHPAD_DICT:-0}"
@@ -52,5 +53,4 @@ s/Я/Ja/g;  s/я/ja/g;
 ")" -e less -mr "$OUTPUT_FILE"
 
 sleep 2
-rm -f -- "$OUTPUT_FILE"
 
