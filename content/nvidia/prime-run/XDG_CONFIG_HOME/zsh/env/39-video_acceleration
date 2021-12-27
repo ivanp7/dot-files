@@ -1,6 +1,9 @@
 if [ "$DISPLAY" ]
 then
-    export VIDEO_ACCELERATOR="prime-run"
-    export MPV_OPTIONS="--vo=gpu --hwdec=auto"
+    if [ -z "$VIDEO_ACCELERATOR" ]
+    then
+        export VIDEO_ACCELERATOR="prime-run"
+        export MPV_OPTIONS="$MPV_OPTIONS --vo=gpu --hwdec=auto"
+    fi
 fi
 

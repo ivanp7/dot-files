@@ -1,4 +1,4 @@
 #!/bin/sh
 
-$VIDEO_ACCELERATOR mpv $MPV_OPTIONS "$@"
+$VIDEO_ACCELERATOR mpv --force-window=yes $MPV_OPTIONS "$@"
 
