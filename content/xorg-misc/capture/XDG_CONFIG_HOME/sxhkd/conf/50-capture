@@ -4,5 +4,5 @@
 
 # make screencast
 super + {_,shift + }{_,ctrl + } Print
-    capture-async.sh {screen,screen/mic} {"#","+"}
+    capture.sh {screen,screen/mic} {"#","+"}
 

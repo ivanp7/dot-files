@@ -1,6 +1,37 @@
 #!/bin/sh
 
-TYPE=$1
+PID_FILE="$TMPDIR_SESSION/ffmpeg-capture.pid"
+
+NOTIFY_TIME=3000
+
+if [ -f "$PID_FILE" ]
+then
+    kill -INT "$(head -1 -- "$PID_FILE")"
+    notify-send -t $NOTIFY_TIME "Capture saved as $(tail -1 -- "$PID_FILE")"
+    rm -f -- "$PID_FILE"
+    exit
+fi
+
+DMENU_PROMPT="Directory"
+DMENU_LINES=10
+DMENU_COLUMNS=4
+
+HISTORY_FILE="$XDG_CACHE_HOME/capture-history"
+touch -- "$HISTORY_FILE"
+
+INPUT=$(tac -- "$HISTORY_FILE" | dmenu.sh -p "$DMENU_PROMPT" -l $DMENU_LINES -g $DMENU_COLUMNS | head -1)
+
+if [ -z "$INPUT" ]
+then
+    notify-send -t $NOTIFY_TIME "Capturing canceled."
+    exit
+elif [ ! -d "$INPUT" ]
+then
+    notify-send -u critical -t $NOTIFY_TIME "$INPUT is not a directory."
+    exit
+fi
+
+TYPE="$1"
 shift 1
 
 : ${SOURCE_SOUND:=$(pactl list short sources | grep alsa_output | head -1 | sed 's/\s.*//')}
@@ -22,11 +53,6 @@ case $TYPE in
 
                 SIZE="${MONITOR_WIDTH}x${MONITOR_HEIGHT}"
                 DISPL="+${MONITOR_X},${MONITOR_Y}"
-
-                case $TYPE in
-                    *mic) : ${CAPTURE_DIRECTORY:="screencast/full/mic"} ;;
-                    *) : ${CAPTURE_DIRECTORY:="screencast/full/sound"} ;;
-                esac
                 ;;
             *)
                 [ "$AREA" = "+" ] && AREA="$(slop)"
@@ -34,11 +60,6 @@ case $TYPE in
                 SIZE="${AREA%%+*}"
                 AREA="${AREA#*+}"
                 DISPL="+${AREA%+*},${AREA#*+}"
-
-                case $TYPE in
-                    *mic) : ${CAPTURE_DIRECTORY:="screencast/area/mic"} ;;
-                    *) : ${CAPTURE_DIRECTORY:="screencast/area/sound"} ;;
-                esac
         esac
 
         : ${FILENAME_PREFIX:="screencast"}
@@ -58,8 +79,6 @@ case $TYPE in
         ;;
 
     mic)
-        : ${CAPTURE_DIRECTORY:="microphone"}
-
         : ${FILENAME_PREFIX:="record"}
         : ${FILENAME_EXT:="aac"}
 
@@ -69,11 +88,15 @@ esac
 
 : ${FILENAME:="${FILENAME_PREFIX}_$(date "+%F_%T").${FILENAME_EXT}"}
 
-: ${DIRECTORY:="$HOME/capture/$CAPTURE_DIRECTORY"}
-mkdir -p -- "$DIRECTORY"
+ffmpeg -y "$@" $AUDIO_FLAGS $VIDEO_FLAGS "$INPUT/$FILENAME" > /dev/null 2>&1 &
+PID=$!
 
-ffmpeg -y "$@" $AUDIO_FLAGS $VIDEO_FLAGS "$DIRECTORY/$FILENAME"
-[ "$?" -eq 0 -o "$?" -eq 130 ] &&
-    notify-send -t 3000 "Capture saved as $DIRECTORY/$FILENAME" ||
-    notify-send -u critical -t 2000 "Error, capture not saved"
+if [ -d "/proc/$PID" ]
+then
+    echo "$PID" > "$PID_FILE"
+    echo "$INPUT/$FILENAME" >> "$PID_FILE"
+    { grep -Fv "$INPUT" -- "$HISTORY_FILE"; echo "$INPUT"; } | sponge -- "$HISTORY_FILE"
+else
+    notify-send -u critical -t $NOTIFY_TIME "Error, capture could not be started"
+fi
 
