@@ -86,11 +86,10 @@ cursor-scroll = ns-resize
 ; }}}
 ; module/tty {{{
 [module/tty]
-type = custom/script
-exec = ${env:SCRIPT_TTY}
-tail = true
+type = custom/text
+content = ${env:PREFIX}
 
-format-foreground = ${colors.foreground-alt}
+content-foreground = ${colors.foreground-alt}
 
 ; }}}
 ; module/bspwm {{{
