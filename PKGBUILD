@@ -6,7 +6,7 @@ arch=('any')
 license=('Unlicense')
 depends=(coreutils sudo)
 
-pkgver=2021.12.29
+pkgver=2021.12.30
 pkgrel=1
 pkgver ()
 {
@@ -203,9 +203,9 @@ process_file ()
             ;;
 
         check_uninstall)
-            if [ ! -O "\$REAL_PATH" ]
+            if [ -e "\$REAL_PATH" -a ! -O "\$REAL_PATH" ]
             then
-                echo "Error [\$OP]: file \$1 is not owner by the user" 1>&2
+                echo "Error [\$OP]: file \$REAL_PATH is not owned by the user" 1>&2
                 exit 1
             fi
             ;;
@@ -225,7 +225,7 @@ process_file ()
             ;;
 
         uninstall)
-            if ! rm -fv -- "\$REAL_PATH"
+            if [ -e "\$REAL_PATH" ] && ! rm -fv -- "\$REAL_PATH"
             then
                 echo "Error [\$OP]: failed to remove file \$REAL_PATH" 1>&2
                 exit 1
