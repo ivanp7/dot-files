@@ -6,7 +6,7 @@ arch=('any')
 license=('Unlicense')
 depends=(coreutils sudo)
 
-pkgver=2022.01.16
+pkgver=2022.01.17
 pkgrel=1
 pkgver ()
 {
