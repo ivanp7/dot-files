@@ -26,7 +26,7 @@ fl- ()
     done |
         sort | comm -23 -- "$TMPDIR_SESSION/file_lists/$FILE_LIST" - | sponge "$TMPDIR_SESSION/file_lists/$FILE_LIST"
 
-    [ -s "$TMPDIR_SESSION/file_lists/$FILE_LIST" ] || rm -r -- "$TMPDIR_SESSION/file_lists/$FILE_LIST"
+    [ -s "$TMPDIR_SESSION/file_lists/$FILE_LIST" ] || rm -f -- "$TMPDIR_SESSION/file_lists/$FILE_LIST"
 }
 
 flr ()
@@ -35,7 +35,7 @@ flr ()
 
     : ${FILE_LIST:="default"}
 
-    rm -r -- "$TMPDIR_SESSION/file_lists/$FILE_LIST"
+    rm -f -- "$TMPDIR_SESSION/file_lists/$FILE_LIST"
 }
 
 fle ()
