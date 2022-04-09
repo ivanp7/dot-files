@@ -1,7 +1,7 @@
 #!/bin/sh
 # (xkcd link: https://xkcd.com/1168/)
 
-FILE="$1"
+FILE="$(realpath -s -- "$1")"
 POSTFIX="-archive-contents"
 
 mime_type="$(file --mime-type "$FILE" -bLE)" || mime_type=""
