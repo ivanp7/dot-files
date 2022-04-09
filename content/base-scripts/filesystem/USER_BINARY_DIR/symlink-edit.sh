@@ -1,6 +1,6 @@
 #!/bin/sh
 
-LINK="$1"
+LINK="$(realpath -s -- "$1")"
 
 if [ ! -L "$LINK" ]
 then

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-FILE="$1"
+FILE="$(realpath -s -- "$1")"
 
 mime_type=$(file --mime-type "$FILE" -bLE) || mime_type=""
 case $mime_type in
