@@ -83,7 +83,7 @@ alias si='shell_info'
 alias sep='separator'
 
 alias ls='ls --group-directories-first --color=auto'
-alias ll='ls --group-directories-first -alF'
+alias ll='ls --group-directories-first -ahlF'
 alias la='ls --group-directories-first -A'
 alias l='ls --group-directories-first -CF'
 alias grep='grep --color=auto'
