@@ -9,20 +9,22 @@
     ctags = !.git/hooks/ctags
 
 [diff]
-    tool = nvim.sh
+    tool = lr
 [difftool]
     prompt = false
     trustExitCode = true
-[difftool "nvim.sh"]
-    cmd = nvim.sh -d "$LOCAL" "$REMOTE" -c 'wincmd w'
+[difftool "lr"]
+    cmd = nvim.sh -R -d "$LOCAL" "$REMOTE" -c 'wincmd w'
+[difftool "lmr"]
+    cmd = nvim.sh -R -d "$LOCAL" "$MERGED" "$REMOTE" -c 'wincmd w' -c 'wincmd J' -c 'set noro'
 
 [merge]
-    tool = nvim.sh
+    tool = lmbr
 [mergetool]
     prompt = false
     trustExitCode = true
-[mergetool "nvim.sh"]
-    cmd = nvim.sh -d "$LOCAL" "$MERGED" "$BASE" "$REMOTE" -c 'wincmd w' -c 'wincmd J'
+[mergetool "lmbr"]
+    cmd = nvim.sh -R -d "$LOCAL" "$MERGED" "$BASE" "$REMOTE" -c 'wincmd w' -c 'wincmd J' -c 'set noro'
 
 [pull]
     rebase = false
