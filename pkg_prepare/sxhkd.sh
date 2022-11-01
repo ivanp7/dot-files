@@ -1,2 +1,2 @@
-consolidate "XDG_CONFIG_HOME/sxhkd/conf" "#"
+consolidate "XDG_CONFIG_HOME/sxhkd/conf" "#" "00-" ".cfg"
 

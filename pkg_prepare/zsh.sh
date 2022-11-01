@@ -1,4 +1,4 @@
-consolidate "XDG_CONFIG_HOME/zsh/env" "#"
-consolidate "XDG_CONFIG_HOME/zsh/rc" "#"
-consolidate "XDG_CONFIG_HOME/zsh/login" "#"
+consolidate "XDG_CONFIG_HOME/zsh/env" "#" "00-" ".zsh"
+consolidate "XDG_CONFIG_HOME/zsh/rc" "#" "00-" ".zsh"
+consolidate "XDG_CONFIG_HOME/zsh/login" "#" "00-" ".zsh"
 

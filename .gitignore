@@ -1,5 +1,6 @@
 PKGBUILD
 dot-files.install
+.pkg_prepare.sh
 /src
 /pkg
 /*.pkg.tar.zst
