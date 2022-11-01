@@ -37,19 +37,22 @@ Notice that `install` and `uninstall` instructions are NOT run during reinstalla
 Scripts from `pkg_prepare` directory are run sequentially in the `prepare()` function of `PKGBUILD`, after initial package tree is formed under `$srcdir`.
 Their purpose is to do some content preprocessing before it is packaged (e.g. to consolidate files from some subdirectory into a single file, or to edit files automatically, etc).
 
-### 4. Build and install the package by executing `install.sh`
+### 4. Build and install the package
 
-The default package name is `dot-files`, but it can be changed by editing `pkgname=` in `PKGBUILD` and `PACKAGE_NAME=` in `dot-files.install`.
-Warning: name of the dot-files tool (default `dot-files.sh`) depends on the package name: it is `${PACKAGE_NAME}.sh`.
+* Download the installer: `git submodule init && git submodule update`
+* Execute the installer: `installer/install.sh`
+
+The package name and its interface script depend on the current git branch: `dot-files-{branch}`.
 
 ### 5. Use the package
 
 Log as a user and execute:
-* `dot-files.sh` to see list of commands
-* `dot-files.sh status` to check whether dot-files are installed for you or not
-* `dot-files.sh install` to install dot-files for you
-* `dot-files.sh reinstall` to reinstall dot-files for you
-* `dot-files.sh uninstall` to uninstall dot-files for you
-* `dot-files.sh update` to perform dot-files custom update instructions for you without reinstalling the files
+* `dot-files-{branch}.sh` to see list of commands
+* `dot-files-{branch}.sh status` to check whether dot-files are installed for you or not
+* `dot-files-{branch}.sh install` to install dot-files for you
+* `dot-files-{branch}.sh reinstall` to reinstall dot-files for you
+* `dot-files-{branch}.sh uninstall` to uninstall dot-files for you
+* `dot-files-{branch}.sh update` to perform dot-files custom update instructions for you without reinstalling the files
 
 Uninstallation or reinstallation of the package automatically triggers uninstallation/reinstallation of dot-files for all users, which have them installed.
+
