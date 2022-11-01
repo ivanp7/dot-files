@@ -1,6 +1,6 @@
 alias ssh256='TERM=xterm-256color ssh '
 
-ssh_add ()
+ssh_agent_add ()
 {
     [ -z "$SSH_AUTH_SOCK" ] && eval $(ssh-agent -s) > /dev/null
 
@@ -27,5 +27,10 @@ expect "Identity added: /home/$username/.ssh/id_rsa (/home/$username/.ssh/id_rsa
 
         unset _SSH_ADD_PASSPHRASE _SSH_ADD_PASSPHRASE_COMP _SSH_ADD_PASSPHRASE_VM
     fi
+}
+
+ssh_agent_kill ()
+{
+    [ -n "$SSH_AUTH_SOCK" ] && eval $(ssh-agent -k) > /dev/null
 }
 
