@@ -18,7 +18,6 @@ install=dot-files.install
 prepare ()
 {
     : ${DOT_FILES_DIR:="../content"}
-    : ${DOT_FILES_PKG_PREPARE:="../pkg_prepare"}
 
     # check dot-files directory existence
     [ -d "$DOT_FILES_DIR" ] || { echo "DOT_FILES_DIR is not a directory"; exit 1; }
@@ -48,11 +47,9 @@ prepare ()
         done
     done
 
-    # run custom preparation scripts
-    for script in $(find "$DOT_FILES_PKG_PREPARE" -type f -name "*.sh" 2> /dev/null | sort)
-    do
-        [ -x "$script" ] && "$script"
-    done
+    # prepare package
+    : ${DOT_FILES_PKG_PREPARE:="../.pkg_prepare.sh"}
+    "$DOT_FILES_PKG_PREPARE"
 }
 
 package ()
