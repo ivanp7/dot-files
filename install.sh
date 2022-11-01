@@ -2,11 +2,14 @@
 
 cd -- "$(dirname -- "$0")"
 
-if [ "$(grep "^\s*pkgname=" PKGBUILD | cut -d'=' -f2)" != "$(grep "^PACKAGE_NAME=" dot-files.install | cut -d'=' -f2)" ]
-then
-    echo "Package names in PKGBUILD and dot-files.install do not match!"
-    exit 1
-fi
+cp -f PKGBUILD.template PKGBUILD
+cp -f dot-files.install.template dot-files.install
+
+: ${PACKAGE_POSTFIX:="$(git -C . rev-parse --abbrev-ref HEAD 2> /dev/null)"}
+: ${PACKAGE_POSTFIX:="custom"}
+
+sed -i "s:@@@@@:$PACKAGE_POSTFIX:g" PKGBUILD
+sed -i "s:@@@@@:$PACKAGE_POSTFIX:g" dot-files.install
 
 makepkg -Cfi
 
