@@ -1,3 +1,5 @@
+PKGBUILD
+dot-files.install
 /src
 /pkg
 /*.pkg.tar.zst
