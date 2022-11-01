@@ -1,6 +1,0 @@
-if [ "$DISPLAY" ]
-then
-    : ${GUI_PLAYER="scratchpad-mpv.sh"}
-    export GUI_PLAYER
-fi
-

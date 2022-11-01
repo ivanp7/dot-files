@@ -1,3 +1,0 @@
-: ${TERM_VIEWER="fbv.sh"}
-export TERM_VIEWER
-

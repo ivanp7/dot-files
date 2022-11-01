@@ -1,3 +1,0 @@
-: ${TERM_PLAYER="mpv-term.sh"}
-export TERM_PLAYER
-

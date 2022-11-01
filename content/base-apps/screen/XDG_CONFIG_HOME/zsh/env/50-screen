@@ -1,8 +1,0 @@
-export SCREENRC="$XDG_CONFIG_HOME/screen/screenrc"
-
-if [ -z "$ZSH_SHELL_INFO_PSTREE_SED_SCREEN" ]
-then
-    export ZSH_SHELL_INFO_PSTREE_SED_SCREEN="s/screen(---screen)*/(screen)/g"
-    export ZSH_SHELL_INFO_PSTREE_SED="$ZSH_SHELL_INFO_PSTREE_SED; $ZSH_SHELL_INFO_PSTREE_SED_SCREEN"
-fi
-

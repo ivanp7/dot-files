@@ -1,3 +1,0 @@
-export SOKSAVEDIR="$XDG_DATA_HOME/csokoban"
-export BLKSAVEDIR="$XDG_DATA_HOME/cblocks"
-

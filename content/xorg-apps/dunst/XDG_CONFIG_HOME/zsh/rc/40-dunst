@@ -1,4 +1,0 @@
-alias nsl='notify-send --urgency=low '
-alias nsn='notify-send --urgency=normal '
-alias nsc='notify-send --urgency=critical '
-

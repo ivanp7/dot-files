@@ -1,3 +1,0 @@
-: ${TERM_BROWSER:="w3m.sh"}
-export TERM_BROWSER
-

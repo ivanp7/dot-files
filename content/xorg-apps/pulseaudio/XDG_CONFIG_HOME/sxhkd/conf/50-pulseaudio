@@ -1,6 +1,0 @@
-shift + XF86AudioMute
-    pavucontrol
-
-shift + XF86AudioLowerVolume
-    paprefs
-
