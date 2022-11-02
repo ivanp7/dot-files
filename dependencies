@@ -3,5 +3,5 @@ neovim nvimpager-git \
 tmux screen \
 openssh \
 pass \
-acpi cppcheck ctags fzf pkgfile ripgrep \
+acpi cppcheck ctags fzf pkgfile ripgrep wget \
 curl git gnupg sudo
