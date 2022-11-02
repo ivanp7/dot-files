@@ -2,5 +2,6 @@ zsh zsh-completions zsh-syntax-highlighting \
 neovim nvimpager-git \
 tmux screen \
 openssh \
+pass \
 acpi cppcheck ctags fzf pkgfile ripgrep \
 curl git gnupg sudo
