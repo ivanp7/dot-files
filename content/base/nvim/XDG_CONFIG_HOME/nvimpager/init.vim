@@ -173,6 +173,11 @@ Plug 'rbgrouleff/bclose.vim'
 " tmux
 Plug 'christoomey/vim-tmux-navigator'
 
+" Other plugins
+for f in glob($XDG_CONFIG_HOME . '/nvim/conf/**/*.plug', 0, 1)
+    execute 'source' f
+endfor
+
 call plug#end()
 
 " }}}
@@ -206,6 +211,13 @@ let g:semanticEnableFileTypes = ['c', 'cpp', 'java', 'javascript', 'python', 'vi
 let g:semanticPersistCacheLocation = $XDG_CACHE_HOME . "/nvim/semantic-highlight-cache"
 
 let g:semanticLispPersistCacheLocation = $XDG_CACHE_HOME . "/nvim/semantic-lisp-highlight-cache"
+
+" }}}
+" other plugins {{{
+
+for f in glob($XDG_CONFIG_HOME . '/nvim/conf/**/*.vim', 0, 1)
+    execute 'source' f
+endfor
 
 " }}}
 " tmux integration {{{

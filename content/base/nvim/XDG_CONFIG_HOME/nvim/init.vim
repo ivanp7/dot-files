@@ -728,6 +728,11 @@ Plug 'guns/vim-sexp'
 Plug 'tpope/vim-sexp-mappings-for-regular-people'
 Plug 'vlime/vlime', {'rtp': 'vim/'}
 
+" Other plugins
+for f in glob($XDG_CONFIG_HOME . '/nvim/conf/**/*.plug', 0, 1)
+    execute 'source' f
+endfor
+
 call plug#end()
 
 " }}}
@@ -968,6 +973,13 @@ function! VlimeBuildServerCommandFor_ros(vlime_loader, vlime_eval)
                 \ "--load", a:vlime_loader,
                 \ "--eval", a:vlime_eval]
 endfunction
+
+" }}}
+" other plugins {{{
+
+for f in glob($XDG_CONFIG_HOME . '/nvim/conf/**/*.vim', 0, 1)
+    execute 'source' f
+endfor
 
 " }}}
 " plugins override {{{
