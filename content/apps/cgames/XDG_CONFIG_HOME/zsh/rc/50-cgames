@@ -1,0 +1,2 @@
+alias cmines="cmines -s \"$XDG_DATA_HOME/cminesrc\" "
+

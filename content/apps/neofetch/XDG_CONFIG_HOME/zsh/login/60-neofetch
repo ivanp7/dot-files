@@ -1,0 +1,4 @@
+printf "\n\n\n\n"
+neofetch
+printf "\n"
+
