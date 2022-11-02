@@ -164,17 +164,13 @@ Plug 'Yggdroot/indentLine'
 
 " Syntax highlighting
 Plug 'jaxbot/semantic-highlight.vim'
-Plug 'ivanp7/lisp-semantic-highlight.vim'
 
 " Interface enhancement
 Plug 'qpkorr/vim-bufkill'
 Plug 'rbgrouleff/bclose.vim'
 
-" tmux
-Plug 'christoomey/vim-tmux-navigator'
-
 " Other plugins
-for f in glob($XDG_CONFIG_HOME . '/nvim/conf/**/*.plug', 0, 1)
+for f in glob($XDG_CONFIG_HOME . '/nvim/plug/*.vim', 0, 1)
     execute 'source' f
 endfor
 
@@ -210,29 +206,12 @@ let g:indentLine_color_gui = '#888888'
 let g:semanticEnableFileTypes = ['c', 'cpp', 'java', 'javascript', 'python', 'vim']
 let g:semanticPersistCacheLocation = $XDG_CACHE_HOME . "/nvim/semantic-highlight-cache"
 
-let g:semanticLispPersistCacheLocation = $XDG_CACHE_HOME . "/nvim/semantic-lisp-highlight-cache"
-
 " }}}
 " other plugins {{{
 
-for f in glob($XDG_CONFIG_HOME . '/nvim/conf/**/*.vim', 0, 1)
+for f in glob($XDG_CONFIG_HOME . '/nvim/conf/*.vim', 0, 1)
     execute 'source' f
 endfor
-
-" }}}
-" tmux integration {{{
-
-" ******************** vim-tmux navigator ********************
-
-let g:tmux_navigator_no_mappings = 1
-
-nnoremap <silent> <C-M-h> :TmuxNavigateLeft<CR>
-nnoremap <silent> <C-M-j> :TmuxNavigateDown<CR>
-nnoremap <silent> <C-M-k> :TmuxNavigateUp<CR>
-nnoremap <silent> <C-M-l> :TmuxNavigateRight<CR>
-
-" Disable tmux navigator when zooming the Vim pane
-let g:tmux_navigator_disable_when_zoomed = 1
 
 " }}}
 

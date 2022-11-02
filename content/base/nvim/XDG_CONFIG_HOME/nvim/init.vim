@@ -427,250 +427,6 @@ nnoremap <silent> <leader>t :call SwitchColorColumn()<CR>
 nnoremap <silent> <leader>n :set relativenumber!<CR>
 
 " }}}
-" complex user interface extensions {{{
-" horizontal (column) ruler {{{
-
-let g:column_ruler_auto = v:false
-
-function! ShowColumnRuler(placement)
-    let g:column_ruler_auto = v:true
-    if !exists("w:column_ruler_window") && !exists("w:column_ruler")
-        let l:win_id = win_getid()
-
-        let l:win_view = winsaveview()
-
-        setl scrollbind scrollopt+=hor cursorcolumn
-        if a:placement == 'b'
-            sp +enew
-        else
-            abo sp +enew
-        endif
-        call setline(1,'....+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8....+....9....+....|....+....|....+....|')
-        let &l:statusline="%#Normal#".repeat(' ',winwidth(0))
-        res 1
-        setl scrollbind nomod buftype=nofile winfixheight nonumber nocursorline nocursorcolumn bufhidden=wipe nobuflisted
-
-        let w:column_ruler_window = l:win_id
-        let l:win_id = win_getid()
-        call win_gotoid(w:column_ruler_window)
-        let w:column_ruler = l:win_id
-
-        call winrestview(l:win_view)
-    endif
-    let g:column_ruler_auto = v:false
-endfunction
-
-function! ForgetColumnRuler()
-    if exists("w:column_ruler")
-        setl scrollopt-=hor noscrollbind nocursorcolumn
-        unlet w:column_ruler
-    endif
-endfunction
-
-function! HideColumnRuler()
-    let g:column_ruler_auto = v:true
-    if exists("w:column_ruler")
-        let l:column_ruler = v:true
-        call win_gotoid(w:column_ruler)
-    endif
-    if exists("l:column_ruler") || exists("w:column_ruler_window")
-        let l:win_id = w:column_ruler_window
-        quit
-        call win_gotoid(l:win_id)
-        call ForgetColumnRuler()
-    endif
-    let g:column_ruler_auto = v:false
-endfunction
-
-let g:column_ruler_window_count = winnr('$')
-
-function! AutoHideColumnRulerWinLeave()
-    if g:column_ruler_auto
-        return
-    endif
-
-    let g:column_ruler_window_count = winnr('$')
-    if exists("w:column_ruler")
-        let g:column_ruler_to_hide = w:column_ruler
-        let g:column_ruler_to_hide_window_mode = v:false
-    elseif exists("w:column_ruler_window")
-        let g:column_ruler_to_hide = w:column_ruler_window
-        let g:column_ruler_to_hide_window_mode = v:true
-    endif
-endfunction
-
-function! AutoHideColumnRulerWinEnter()
-    if g:column_ruler_auto
-        return
-    else
-        let g:column_ruler_auto = v:true
-    endif
-
-    let l:wincount = winnr('$')
-    if exists("g:column_ruler_to_hide")
-        if (l:wincount < g:column_ruler_window_count)
-            call win_gotoid(g:column_ruler_to_hide)
-            if !g:column_ruler_to_hide_window_mode
-                unlet w:column_ruler_window
-                quit
-            else
-                call ForgetColumnRuler()
-            endif
-        endif
-
-        unlet g:column_ruler_to_hide
-        unlet g:column_ruler_to_hide_window_mode
-    endif
-
-    let g:column_ruler_auto = v:false
-endfunction
-
-autocmd WinLeave * call AutoHideColumnRulerWinLeave()
-autocmd WinEnter * call AutoHideColumnRulerWinEnter()
-
-function! SwitchColumnRuler(placement)
-    if !exists("w:column_ruler") && !exists("w:column_ruler_window")
-        call ShowColumnRuler(a:placement)
-    else
-        call HideColumnRuler()
-    endif
-endfunction
-
-nnoremap <silent> <leader>r :call SwitchColumnRuler('t')<CR>
-nnoremap <silent> <leader>R :call SwitchColumnRuler('b')<CR>
-
-" }}}
-" buffer difference {{{
-
-let g:buffer_diff_auto = v:false
-
-function! ShowBufferDiff(direction)
-    let g:buffer_diff_auto = v:true
-    if !exists("w:buffer_diff_window") && !exists("w:buffer_diff")
-        let l:win_id = win_getid()
-
-        if a:direction == 'h'
-            lefta vsp +enew
-        elseif a:direction == 'j'
-            sp +enew
-        elseif a:direction == 'k'
-            abo sp +enew
-        else
-            vsp +enew
-        endif
-        silent r #
-        0d_
-        setl nomod buftype=nofile bufhidden=wipe nobuflisted
-        diffthis
-
-        let w:buffer_diff_window = l:win_id
-        let l:win_id = win_getid()
-        call win_gotoid(w:buffer_diff_window)
-        let w:buffer_diff = l:win_id
-
-        diffthis
-    endif
-    let g:buffer_diff_auto = v:false
-endfunction
-
-function! ForgetBufferDiff()
-    if exists("w:buffer_diff")
-        diffoff
-        unlet w:buffer_diff
-    endif
-endfunction
-
-function! HideBufferDiff()
-    let g:buffer_diff_auto = v:true
-    if exists("w:buffer_diff")
-        let l:buffer_diff = v:true
-        call win_gotoid(w:buffer_diff)
-    endif
-    if exists("l:buffer_diff") || exists("w:buffer_diff_window")
-        let l:win_id = w:buffer_diff_window
-        quit
-        call win_gotoid(l:win_id)
-        call ForgetBufferDiff()
-    endif
-    let g:buffer_diff_auto = v:false
-endfunction
-
-let g:buffer_diff_window_count = winnr('$')
-
-function! AutoHideBufferDiffWinLeave()
-    if g:buffer_diff_auto
-        return
-    endif
-
-    let g:buffer_diff_window_count = winnr('$')
-    if exists("w:buffer_diff")
-        let g:buffer_diff_to_hide = w:buffer_diff
-        let g:buffer_diff_to_hide_window_mode = v:false
-    elseif exists("w:buffer_diff_window")
-        let g:buffer_diff_to_hide = w:buffer_diff_window
-        let g:buffer_diff_to_hide_window_mode = v:true
-    endif
-endfunction
-
-function! AutoHideBufferDiffWinEnter()
-    if g:buffer_diff_auto
-        return
-    else
-        let g:buffer_diff_auto = v:true
-    endif
-
-    let l:wincount = winnr('$')
-    if exists("g:buffer_diff_to_hide")
-        if (l:wincount < g:buffer_diff_window_count)
-            call win_gotoid(g:buffer_diff_to_hide)
-            if !g:buffer_diff_to_hide_window_mode
-                unlet w:buffer_diff_window
-                quit
-            else
-                call ForgetBufferDiff()
-            endif
-        endif
-
-        unlet g:buffer_diff_to_hide
-        unlet g:buffer_diff_to_hide_window_mode
-    endif
-
-    let g:buffer_diff_auto = v:false
-endfunction
-
-function! UpdateBufferDiff()
-    let g:buffer_diff_auto = v:true
-    if exists("w:buffer_diff")
-        call win_gotoid(w:buffer_diff)
-        diffoff
-        normal gg"_dG
-        silent r #
-        0d_
-        diffthis
-        call win_gotoid(w:buffer_diff_window)
-    endif
-    let g:buffer_diff_auto = v:false
-endfunction
-
-autocmd WinLeave * call AutoHideBufferDiffWinLeave()
-autocmd WinEnter * call AutoHideBufferDiffWinEnter()
-autocmd BufWritePost * silent call UpdateBufferDiff()
-
-function! SwitchBufferDiff(direction)
-    if !exists("w:buffer_diff") && !exists("w:buffer_diff_window")
-        call ShowBufferDiff(a:direction)
-    else
-        call HideBufferDiff()
-    endif
-endfunction
-
-nnoremap <silent> <leader>ih :call SwitchBufferDiff('h')<CR>
-nnoremap <silent> <leader>ij :call SwitchBufferDiff('j')<CR>
-nnoremap <silent> <leader>ik :call SwitchBufferDiff('k')<CR>
-nnoremap <silent> <leader>il :call SwitchBufferDiff('l')<CR>
-
-" }}}
-" }}}
 " built-in plugins {{{
 
 " ******************** termdebug **************************
@@ -705,7 +461,6 @@ Plug 'machakann/vim-highlightedyank'
 
 " Syntax highlighting
 Plug 'jaxbot/semantic-highlight.vim'
-Plug 'ivanp7/lisp-semantic-highlight.vim'
 
 " Interface enhancement
 Plug 'qpkorr/vim-bufkill'
@@ -714,22 +469,11 @@ Plug 'rbgrouleff/bclose.vim'
 Plug 'junegunn/fzf.vim'
 Plug 'majutsushi/tagbar'
 
-" tmux
-Plug 'christoomey/vim-tmux-navigator'
-Plug 'jabirali/vim-tmux-yank'
-Plug 'tmux-plugins/vim-tmux'
-Plug 'edkolev/tmuxline.vim'
-
 " Development
 Plug 'neomake/neomake'
 
-" S-expressions and Lisp
-Plug 'guns/vim-sexp'
-Plug 'tpope/vim-sexp-mappings-for-regular-people'
-Plug 'vlime/vlime', {'rtp': 'vim/'}
-
 " Other plugins
-for f in glob($XDG_CONFIG_HOME . '/nvim/conf/**/*.plug', 0, 1)
+for f in glob($XDG_CONFIG_HOME . '/nvim/plug/*.vim', 0, 1)
     execute 'source' f
 endfor
 
@@ -807,10 +551,6 @@ let g:lightline = {
       \ },
       \ }
 
-" ******************** vim-startify **************************
-
-let g:startify_custom_header = map(split(system("fortune.sh"), '\n'), 'repeat(" ", 8) . v:val')
-
 " ******************** indentLine **************************
 
 let g:indentLine_char = '·'
@@ -826,8 +566,6 @@ let g:highlightedyank_highlight_duration = 1000
 
 let g:semanticEnableFileTypes = ['c', 'cpp', 'java', 'javascript', 'python', 'vim']
 let g:semanticPersistCacheLocation = $XDG_CACHE_HOME . "/nvim/semantic-highlight-cache"
-
-let g:semanticLispPersistCacheLocation = $XDG_CACHE_HOME . "/nvim/semantic-lisp-highlight-cache"
 
 " }}}
 " interface enhancement {{{
@@ -866,21 +604,6 @@ command! -bang -nargs=* Rg call fzf#vim#grep("rg --column --line-number --no-hea
 nmap <F4> :TagbarToggle<CR>
 
 " }}}
-" tmux integration {{{
-
-" ******************** vim-tmux navigator ********************
-
-let g:tmux_navigator_no_mappings = 1
-
-nnoremap <silent> <C-M-h> :TmuxNavigateLeft<CR>
-nnoremap <silent> <C-M-j> :TmuxNavigateDown<CR>
-nnoremap <silent> <C-M-k> :TmuxNavigateUp<CR>
-nnoremap <silent> <C-M-l> :TmuxNavigateRight<CR>
-
-" Disable tmux navigator when zooming the Vim pane
-let g:tmux_navigator_disable_when_zoomed = 1
-
-" }}}
 " development {{{
 
 " Neomake
@@ -899,85 +622,9 @@ let g:neomake_cpp_cppcheck_maker = {
 call neomake#configure#automake('nrwi', 500)
 
 " }}}
-" s-expressions and Lisp {{{
-
-" tweak syntax
-autocmd FileType lisp syntax clear lispAtom
-autocmd FileType lisp syntax clear lispEscapeSpecial
-autocmd FileType lisp syntax clear lispAtomList
-autocmd FileType lisp syntax clear lispBQList
-
-" ******************** vim-sexp ****************************
-
-let g:sexp_insert_after_wrap = 0
-
-let g:sexp_mappings = {
-            \ 'sexp_flow_to_prev_open':         'g?(',
-            \ 'sexp_flow_to_next_close':        'g/)',
-            \ 'sexp_flow_to_prev_close':        'g?)',
-            \ 'sexp_flow_to_next_open':         'g/(',
-            \ 'sexp_flow_to_prev_leaf_head':    'gH',
-            \ 'sexp_flow_to_next_leaf_head':    'gh',
-            \ 'sexp_flow_to_prev_leaf_tail':    'gL',
-            \ 'sexp_flow_to_next_leaf_tail':    'gl',
-            \
-            \ 'sexp_round_head_wrap_list':      '<LocalLeader>ei',
-            \ 'sexp_round_tail_wrap_list':      '<LocalLeader>eI',
-            \ 'sexp_round_head_wrap_element':   '<LocalLeader>ew',
-            \ 'sexp_round_tail_wrap_element':   '<LocalLeader>eW',
-            \ 'sexp_splice_list':               '<LocalLeader>e@',
-            \ 'sexp_convolute':                 '<LocalLeader>e?',
-            \ 'sexp_raise_list':                '<LocalLeader>eo',
-            \ 'sexp_raise_element':             '<LocalLeader>eO',
-            \
-            \ 'sexp_insert_at_list_head':       '<LocalLeader>eh',
-            \ 'sexp_insert_at_list_tail':       '<LocalLeader>el',
-            \
-            \ 'sexp_square_head_wrap_list':     '<LocalLeader>e[',
-            \ 'sexp_square_tail_wrap_list':     '<LocalLeader>e]',
-            \ 'sexp_curly_head_wrap_list':      '<LocalLeader>e{',
-            \ 'sexp_curly_tail_wrap_list':      '<LocalLeader>e}',
-            \ 'sexp_square_head_wrap_element':  '<LocalLeader>ee[',
-            \ 'sexp_square_tail_wrap_element':  '<LocalLeader>ee]',
-            \ 'sexp_curly_head_wrap_element':   '<LocalLeader>ee{',
-            \ 'sexp_curly_tail_wrap_element':   '<LocalLeader>ee}',
-            \ }
-
-autocmd FileType lisp imap <silent><buffer> <C-H> <Plug>(sexp_insert_backspace)
-
-" ******************** vlime *******************************
-
-let g:vlime_leader = '<LocalLeader>'
-let g:vlime_enable_autodoc = v:true
-let g:vlime_window_settings =
-      \ {'repl':      {'pos': 'belowright', 'vertical': v:true},
-       \ 'sldb':      {'pos': 'belowright', 'vertical': v:true},
-       \ 'inspector': {'pos': 'belowright', 'vertical': v:true},
-       \ 'preview':   {'pos': 'belowright', 'size': v:null, 'vertical': v:true}}
-
-let g:vlime_force_default_keys = v:true
-" let g:vlime_cl_use_terminal = v:true
-
-function! VlimeEnableInteractionMode()
-    let b:vlime_interaction_mode = v:true
-    nnoremap <buffer> <silent> <CR> :call vlime#plugin#SendToREPL(vlime#ui#CurExprOrAtom())<CR>
-    vnoremap <buffer> <silent> <CR> :<c-u>call vlime#plugin#SendToREPL(vlime#ui#CurSelection())<CR>
-endfunction
-
-autocmd FileType lisp call VlimeEnableInteractionMode()
-autocmd BufNewFile,BufRead * if &ft=~?'lisp'|:call VlimeEnableInteractionMode()|endif
-
-let g:vlime_cl_impl = "ros"
-function! VlimeBuildServerCommandFor_ros(vlime_loader, vlime_eval)
-    return ["ros", "run",
-                \ "--load", a:vlime_loader,
-                \ "--eval", a:vlime_eval]
-endfunction
-
-" }}}
 " other plugins {{{
 
-for f in glob($XDG_CONFIG_HOME . '/nvim/conf/**/*.vim', 0, 1)
+for f in glob($XDG_CONFIG_HOME . '/nvim/conf/*.vim', 0, 1)
     execute 'source' f
 endfor
 
