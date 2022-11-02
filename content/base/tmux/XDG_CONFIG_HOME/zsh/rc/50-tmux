@@ -1,0 +1,21 @@
+tx ()
+{
+    cd
+
+    if [[ -o interactive ]] && [[ ! "$TERM" =~ "screen" ]] && [[ ! "$TERM" =~ "tmux" ]] && [ -z "$TMUX" ]
+    then
+        if [ -z "$1" ]
+        then tmux attach || tmux new-session -x $COLUMNS -y $(($LINES-1)) -s default
+        else tmux attach -t "$1" || tmux new-session -x $COLUMNS -y $(($LINES-1)) -s "$1"
+        fi && { echo; separator; shell_info; }
+    fi
+
+    cd -- "$OLDPWD"
+}
+
+txclip ()
+{
+    tmux set-buffer "$(cat)"
+}
+
+

@@ -1,0 +1,29 @@
+###############################################################################
+# base-apps/git
+###############################################################################
+
+# including provided configuration to main configuration file
+grep -q "^\s*path\s*=\s*config\.defaults\s*\$" "$XDG_CONFIG_HOME/git/config" 2> /dev/null ||
+cat >> "$XDG_CONFIG_HOME/git/config" << "EOF"
+
+[include]
+    path = config.defaults
+
+EOF
+
+# providing default ignore patterns
+[ -f "$XDG_CONFIG_HOME/git/ignore" ] ||
+cat > "$XDG_CONFIG_HOME/git/ignore" << "EOF"
+~*
+*~
+[#]*[#]
+
+*.orig
+*.rej
+
+tags
+*.tags
+Session.vim
+
+EOF
+

@@ -1,0 +1,6 @@
+zsh zsh-completions zsh-syntax-highlighting \
+neovim nvimpager-git \
+tmux screen \
+openssh \
+acpi cppcheck ctags fzf pkgfile ripgrep \
+curl git gnupg sudo

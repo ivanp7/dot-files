@@ -1,0 +1,426 @@
+# functionality {{{
+# bd {{{
+
+bd ()
+{
+    local Num="$1"
+    [ -z "$Num" ] && { cd ..; return; }
+
+    local Path="./"
+    for i in $(seq $Num)
+    do local Path="$Path/.."
+    done
+
+    cd -- "$Path"
+}
+
+# }}}
+# mkcd & bdrm {{{
+
+mkcd ()
+{
+    local DIRS="$@"
+    mkdir -p -- "$DIRS"
+    cd -- "$DIRS"
+}
+
+bdrm ()
+{
+    bd "$1"
+    rmdir -p -- "$(realpath -s --relative-to "$PWD" "$OLDPWD")"
+}
+
+# }}}
+# sudo shell {{{
+
+alias sudo='sudo '
+alias sudoenv="sudo --preserve-env=$SUDO_PRESERVE_ENV "
+
+sudo_shell ()
+{
+    sudo -s --preserve-env="$SUDO_PRESERVE_ENV" "$@"
+}
+
+alias sush='sudo_shell '
+
+# }}}
+# directory history {{{
+
+alias d='dirs -v | head'
+alias 0=':'
+alias 1='cd +1'
+alias 2='cd +2'
+alias 3='cd +3'
+alias 4='cd +4'
+alias 5='cd +5'
+alias 6='cd +6'
+alias 7='cd +7'
+alias 8='cd +8'
+alias 9='cd +9'
+
+# }}}
+# }}}
+# indicators {{{
+# separator {{{
+
+separator ()
+{
+    echo "$(_color 15)$(dd if=/dev/zero bs=1 count=${1:-$COLUMNS} status=none | sed "s/./·/g")${_color_reset}"
+}
+
+spectrum ()
+{
+    # Based on: https://gist.github.com/XVilka/8346728
+    # echo $COLORTERM
+    awk -v term_cols="${1:-$COLUMNS}" 'BEGIN{
+        s="··";
+        for (colnum = 0; colnum<term_cols; colnum++) {
+            r = 255-(colnum*255/term_cols);
+            g = (colnum*510/term_cols);
+            b = (colnum*255/term_cols);
+            if (g>255) g = 510-g;
+                printf "\033[48;2;%d;%d;%dm", r,g,b;
+                printf "\033[38;2;%d;%d;%dm", 255-r,255-g,255-b;
+                printf "%s\033[0m", substr(s,colnum%2+1,1);
+            }
+        printf "\n";
+    }'
+}
+
+alias sep='separator'
+alias spe='spectrum'
+
+# }}}
+# colors {{{
+
+_color ()
+{
+    if [ -n "$1" -a -z "$2" ]
+    then echo -en "\033[38;5;${1}m"
+    elif [ -n "$1" -a -n "$2" ]
+    then echo -en "\033[38;5;${1}m\033[48;5;${2}m"
+    elif [ -z "$1" -a -n "$2" ]
+    then echo -en "\033[48;5;${2}m"
+    else echo -en "\033[0m"
+    fi
+}
+
+colorgrid ()
+{
+    local iter=0
+    while [ $iter -lt 16 ]
+    do
+        echo -en "$(_color "" $iter) ${_color_reset}$(_color $iter)█ "
+        printf "%03d" $iter
+
+        [ $(($iter % 8)) = 7 ] && printf '\r\n' || printf ' '
+
+        local iter=$(($iter+1))
+    done
+
+    printf '\r\n'
+
+    local iter=16
+    while [ $iter -lt 52 ]
+    do
+        local second=$(($iter+36))
+        local third=$(($second+36))
+        local fourth=$(($third+36))
+        local fifth=$(($fourth+36))
+        local sixth=$(($fifth+36))
+        local seventh=$(($sixth+36))
+
+        echo -en "$(_color "" $iter) ${_color_reset}$(_color $iter)█ "
+        printf "%03d" $iter
+        echo -en " $(_color "" $second) ${_color_reset}$(_color $second)█ "
+        printf "%03d" $second
+        echo -en " $(_color "" $third) ${_color_reset}$(_color $third)█ "
+        printf "%03d" $third
+        echo -en " $(_color "" $fourth) ${_color_reset}$(_color $fourth)█ "
+        printf "%03d" $fourth
+        echo -en " $(_color "" $fifth) ${_color_reset}$(_color $fifth)█ "
+        printf "%03d" $fifth
+        echo -en " $(_color "" $sixth) ${_color_reset}$(_color $sixth)█ "
+        printf "%03d" $sixth
+        if [ $seventh -lt 256 ]; then
+            echo -en " $(_color "" $seventh) ${_color_reset}$(_color $seventh)█ "
+            printf "%03d" $seventh
+        fi
+
+        local iter=$(($iter+1))
+        printf '\r\n'
+    done
+}
+
+dir_colors ()
+{
+    typeset -A names
+    names[rs]="reset"
+    names[no]="global default"
+    names[fi]="normal file"
+    names[di]="directory"
+    names[ln]="symbolic link"
+    names[mh]="multi-hardlink"
+    names[pi]="named pipe"
+    names[so]="socket"
+    names[do]="door"
+    names[bd]="block device"
+    names[cd]="character device"
+    names[or]="orphan symlink"
+    names[mi]="missing file"
+    names[su]="set uid"
+    names[sg]="set gid"
+    names[st]="sticky directory"
+    names[tw]="sticky other writable"
+    names[ow]="other writable"
+    names[ca]="file with capability"
+    names[ex]="executable"
+
+    for i in ${(s.:.)LS_COLORS}
+    do
+        local key=${i%\=*}
+        local color=${i#*\=}
+        local name=${names[(e)$key]-$key}
+        printf '(\e[%sm%s\e[m) ' $color $name
+    done
+    echo
+}
+
+# }}}
+# directory info {{{
+
+current_directory ()
+{
+    printf "%q\n" "$(pwd)"
+}
+
+alias pwdir='current_directory'
+
+# }}}
+# shell info {{{
+
+userhost ()
+{
+    local UserColor="$(_color 15)${_color_underline}"
+    [ "$(id -u)" -eq 0 ] && UserColor="$(_color 196)${_color_underline}"
+    local AtColor="${_color_no_underline}$(_color 244)"
+    local HostColor="$(_color 15)${_color_underline}"
+
+    echo "${_color_reset}$1${UserColor}$USERNAME${AtColor}@${HostColor}$HOST${_color_reset}"
+}
+
+process_chain ()
+{
+    [ -z "$_pstree" ] && return
+
+    local Chain=(${(s/---/)_pstree})
+    [ "$1" = "no_zsh" -a "${Chain[${#Chain}]}" = "zsh" ] && local Chain=(${(@)Chain[1,${#Chain}-1]})
+
+    local ArrowColor="${_color_reset}$(_color 244)"
+    local Arrow=" → "
+
+    if [ "$_colors" -ge 256 ]
+    then
+        local ZshColor="$(_color 15 240)"
+        local TmuxColor="$(_color 15 31)"
+        local SshColor="$(_color 0 226)${_color_blink}"
+        local SuColor="$(_color 0 202)"
+        local OtherColor="$(_color 250)"
+    else
+        local ZshColor="$(_color 0 15)"
+        local TmuxColor="$(_color 15 6)"
+        local SshColor="$(_color 0 3)"
+        local SuColor="$(_color 0 1)"
+        local OtherColor="$(_color 7)"
+    fi
+
+    for proc in $Chain
+    do
+        case "$proc" in
+            zsh) local proc="${ZshColor} $proc " ;;
+            \(tmux\)) local proc="${TmuxColor} $proc " ;;
+            \(ssh\)) local proc="${SshColor} $proc " ;;
+            sudo|su) local proc="${SuColor} $proc " ;;
+            *) local proc="${OtherColor}$proc" ;;
+        esac
+
+        [ "$ProcessChainStr" ] &&
+            local ProcessChainStr="${ProcessChainStr}${ArrowColor}${Arrow}$proc" ||
+            local ProcessChainStr="$proc"
+    done
+
+    echo "${_color_reset}${ProcessChainStr}${_color_reset}"
+}
+
+shell_info ()
+{
+    local TextColor="$(_color 244)"
+    local ValueColor="$(_color 15)"
+
+    local Login=
+    [[ -o login ]] && local Login="login "
+
+    echo "${TextColor}current date/time: ${ValueColor}$(date)${_color_reset}"
+    echo "${TextColor}tty: ${ValueColor}$TTY${TextColor}, X display: ${ValueColor}${DISPLAY:-none}${_p_color_reset}"
+    echo "${TextColor}terminal: ${ValueColor}$TERM${TextColor}, ${ValueColor}${_colors}${TextColor} colors, ${ValueColor}${COLUMNS}${TextColor}x${ValueColor}${LINES}${TextColor} cells${_color_reset}"
+    echo "${TextColor}process chain: $(process_chain)${_p_color_reset}"
+    echo "${TextColor}running ${Login}${ValueColor}${SHELL}${TextColor} shell as $(userhost)${_color_reset}"
+}
+
+alias si='shell_info'
+
+# }}}
+# git info {{{
+
+git_info ()
+{
+    local LocationColor="$(_color 228)"
+    local DotGitWarningColor=$(_color 1)
+
+    # Exit if not inside a Git repository
+    if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1
+    then
+        echo "${_color_reset}"
+        [ -z "$2" ] || echo "0"
+        return
+    fi
+
+    # Git branch/tag, or name-rev if on detached head
+    local GIT_LOCATION=${$(git symbolic-ref -q HEAD || git name-rev --name-only --no-undefined --always HEAD)#(refs/heads/|tags/)}
+    local _gitinfo_length=${#GIT_LOCATION}
+
+    # Exit if inside a .git directory
+    if [ "$(git rev-parse --is-inside-git-dir 2> /dev/null)" = "true" ]
+    then
+        local _gitinfo_length=$(($_gitinfo_length + 5))
+        echo "${_color_reset}$1${LocationColor}$GIT_LOCATION ${DotGitWarningColor}.git${_color_reset}"
+        [ -z "$2" ] || echo "$_gitinfo_length"
+        return
+    fi
+
+    local AheadColor="$(_color 15)"
+    local BehindColor="$(_color 166)"
+
+    local MergingColor="$(_color 33)"
+    local UntrackedColor="$(_color 160)"
+    local ModifiedColor="$(_color 214)"
+    local StagedColor="$(_color 34)"
+
+    local UpArrow="↑"
+    local DownArrow="↓"
+    local UpDownArrow="↕"
+    local Bullet="•"
+
+    local AHEAD="${AheadColor}${UpArrow}NUM"
+    local BEHIND="${BehindColor}${DownArrow}NUM"
+
+    local MERGING="${MergingColor}${UpDownArrow}"
+    local UNTRACKED="${UntrackedColor}${Bullet}"
+    local MODIFIED="${ModifiedColor}${Bullet}"
+    local STAGED="${StagedColor}${Bullet}"
+
+    local -a DIVERGENCES
+    local -a FLAGS
+
+    local NUM_AHEAD="$(git log --oneline @{u}.. 2> /dev/null | wc -l | tr -d ' ')"
+    if [ "$NUM_AHEAD" -gt 0 ]
+    then
+        local _gitinfo_div=true
+        local _gitinfo_length=$(($_gitinfo_length + 1 + ${#NUM_AHEAD}))
+        DIVERGENCES+=( "${AHEAD//NUM/$NUM_AHEAD}" )
+    fi
+
+    local NUM_BEHIND="$(git log --oneline ..@{u} 2> /dev/null | wc -l | tr -d ' ')"
+    if [ "$NUM_BEHIND" -gt 0 ]
+    then
+        local _gitinfo_div=true
+        local _gitinfo_length=$(($_gitinfo_length + 1 + ${#NUM_BEHIND}))
+        DIVERGENCES+=( "${BEHIND//NUM/$NUM_BEHIND}" )
+    fi
+
+    [ "$_gitinfo_div" ] && local _gitinfo_length=$(($_gitinfo_length + 1))
+
+    local GIT_DIR="$(git rev-parse --git-dir 2> /dev/null)"
+    if [ -n "$GIT_DIR" -a -r "$GIT_DIR/MERGE_HEAD" ]
+    then
+        local _gitinfo_flag=true
+        local _gitinfo_length=$(($_gitinfo_length + 1))
+        FLAGS+=( "$MERGING" )
+    fi
+
+    if [ "$(git ls-files $(git rev-parse --show-toplevel) --other --exclude-standard 2> /dev/null)" ]
+    then
+        local _gitinfo_flag=true
+        local _gitinfo_length=$(($_gitinfo_length + 1))
+        FLAGS+=( "$UNTRACKED" )
+    fi
+
+    if ! git diff --quiet 2> /dev/null
+    then
+        local _gitinfo_flag=true
+        local _gitinfo_length=$(($_gitinfo_length + 1))
+        FLAGS+=( "$MODIFIED" )
+    fi
+
+    if ! git diff --cached --quiet 2> /dev/null
+    then
+        local _gitinfo_flag=true
+        local _gitinfo_length=$(($_gitinfo_length + 1))
+        FLAGS+=( "$STAGED" )
+    fi
+
+    [ "$_gitinfo_flag" ] && local _gitinfo_length=$(($_gitinfo_length + 1))
+
+    local -a GIT_INFO
+    GIT_INFO+=( "${LocationColor}$GIT_LOCATION" )
+    [ "${#DIVERGENCES[@]}" -ne 0 ] && GIT_INFO+=( "${(j::)DIVERGENCES}" )
+    [ "${#FLAGS[@]}" -ne 0 ] && GIT_INFO+=( "${(j::)FLAGS}" )
+
+    echo "${_color_reset}$1${(j: :)GIT_INFO}${_color_reset}"
+    [ -z "$2" ] || echo "$_gitinfo_length"
+}
+
+# }}}
+# command history {{{
+
+his ()
+{
+    unset "_p_buffers[$_p_command_number]"
+    unset _p_command_executed
+
+    [ "${#_p_buffers}" -eq 0 ] && return
+
+    for n in {1..$#_p_buffers}; do
+        if [ -z "$*" ] || echo "${_p_buffers[$n]}" | grep -q "$*"
+        then
+            print $(_color 1)$n:${_color_reset} ${_p_buffers[$n]};
+        fi
+    done
+}
+
+# }}}
+# }}}
+# aliases {{{
+# ls {{{
+
+alias ls='ls --group-directories-first --color=auto'
+alias ll='ls --group-directories-first -ahlF'
+alias la='ls --group-directories-first -A'
+alias l='ls --group-directories-first -CF'
+
+# }}}
+# grep {{{
+
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+# }}}
+# diff {{{
+
+alias diff='diff --color=auto'
+
+# }}}
+# }}}
+
+# vim: ft=zsh: foldmethod=marker:
