@@ -1,3 +1,5 @@
+echo "Installing neovim plugins..."
+
 # Upgrade plug.vim
 nvim -es -u "$XDG_CONFIG_HOME/nvim/init.vim" -i NONE -c "PlugUpgrade" -c "qa"
 
