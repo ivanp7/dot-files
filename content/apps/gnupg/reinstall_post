@@ -1,6 +1,4 @@
-###############################################################################
-# base-apps/gnupg
-###############################################################################
+echo "Initializing gnupg configuration..."
 
 chmod 700 "$XDG_DATA_HOME/gnupg/"
 chmod 600 "$XDG_DATA_HOME/gnupg/gpg.conf"

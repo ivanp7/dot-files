@@ -1,6 +1,4 @@
-###############################################################################
-# base-apps/wget
-###############################################################################
+echo "Initializing wget configuration..."
 
 sed -i "s@XDG_CACHE_HOME@$XDG_CACHE_HOME@g" "$XDG_CONFIG_HOME/wgetrc"
 

@@ -1,6 +1,4 @@
-###############################################################################
-# base-apps/nvim
-###############################################################################
+echo "Installing neovim plugins..."
 
 # Install plug.vim
 EDITOR_AUTOLOAD_DIR="$XDG_DATA_HOME/nvim/site/autoload"
