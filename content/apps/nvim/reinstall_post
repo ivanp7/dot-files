@@ -1,0 +1,6 @@
+# Upgrade plug.vim
+nvim -es -u "$XDG_CONFIG_HOME/nvim/init.vim" -i NONE -c "PlugUpgrade" -c "qa"
+
+# Update plugins
+nvim -es -u "$XDG_CONFIG_HOME/nvim/init.vim" -i NONE -c "PlugUpdate" -c "qa"
+
