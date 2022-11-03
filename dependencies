@@ -1,1 +1,2 @@
-dot-files-base fbterm fbv
+dot-files-base \
+fbterm fbv
