@@ -1,0 +1,5 @@
+#!/bin/sh
+
+trap 'rm -f -- "$TABBED_DIR/$TABBED_CLASS"' EXIT
+tabbed -c -w "$TABBED_CLASS" ${TABBED_COMMAND_XID_ARG:+"-r"} ${TABBED_COMMAND_XID_ARG} "$@" > "$TABBED_DIR/$TABBED_CLASS"
+

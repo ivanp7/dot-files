@@ -1,0 +1,4 @@
+# lock screen
+super + Pause
+    lock-screen.sh -force
+

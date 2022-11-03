@@ -1,0 +1,6 @@
+if [ "$DISPLAY" ]
+then
+    : ${GUI_TERMINAL:="scratchpad-st.sh"}
+    export GUI_TERMINAL
+fi
+

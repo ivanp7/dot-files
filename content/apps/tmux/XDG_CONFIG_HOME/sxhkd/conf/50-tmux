@@ -1,0 +1,11 @@
+# tmux clipboard manager
+super + ctrl + c
+    tmux-clipboard.sh
+super + ctrl + Cyrillic_es
+    tmux-clipboard.sh
+
+super + ctrl + v
+    X-clipboard-to-tmux.sh
+super + ctrl + Cyrillic_ve
+    X-clipboard-to-tmux.sh
+
