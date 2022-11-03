@@ -1,0 +1,4 @@
+dot-files-base \
+xorg-xinit bspwm polybar sxhkd \
+libnotify dunst \
+st dmenu tabbed nsxiv
