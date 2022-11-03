@@ -1,0 +1,16 @@
+###############################################################################
+# base-apps/octave
+###############################################################################
+
+mkdir -p -- "$XDG_DATA_HOME/octave/packages"
+touch -- "$XDG_DATA_HOME/octave/octave_packages"
+sed -i "s@XDG_DATA_HOME@$XDG_DATA_HOME@g" "$XDG_CONFIG_HOME/octave/octaverc.defaults"
+
+# including provided configuration to main configuration file
+grep -q "^\s*source\s\+~/.config/octave/octaverc\.defaults\s*;\?\s*\$" "$XDG_CONFIG_HOME/octave/octaverc" 2> /dev/null ||
+cat >> "$XDG_CONFIG_HOME/octave/octaverc"  << "EOF"
+
+source ~/.config/octave/octaverc.defaults;
+
+EOF
+
