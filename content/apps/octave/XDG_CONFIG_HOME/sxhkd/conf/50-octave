@@ -1,0 +1,6 @@
+super + equal
+    calculator-dmenu.sh
+
+super + ctrl + F8
+    scratchpad-octave.sh
+
