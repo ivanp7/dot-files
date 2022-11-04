@@ -1,3 +1,4 @@
 dot-files-xorg dot-files-graphics_terminal_compat \
-zathura \
-surf
+zathura feh \
+surf \
+moreutils shantz-xwinwrap-bzr
