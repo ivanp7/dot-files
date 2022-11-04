@@ -1,6 +1,7 @@
 dot-files-base \
-xorg-server xorg-xinit xorg-xhost xorg-xkill xorg-xev xorg-xmodmap acpilight \
+xorg-server xorg-xinit xorg-xhost xorg-xkill xorg-xev xorg-xmodmap acpilight arandr \
 bspwm polybar sxhkd dunst unclutter \
 st dmenu tabbed nsxiv slock \
 xclip xdotool xkb-switch jq \
-libnotify fontconfig dex
+libnotify fontconfig dex xssstate \
+ttf-liberation
