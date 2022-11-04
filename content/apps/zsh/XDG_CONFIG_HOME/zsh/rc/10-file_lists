@@ -1,0 +1,59 @@
+fl+ ()
+{
+    [ ! -d "$TMPDIR_SESSION/file_lists" ] && mkdir -- "$TMPDIR_SESSION/file_lists"
+
+    : ${FILE_LIST:="default"}
+
+    touch -- "$TMPDIR_SESSION/file_lists/$FILE_LIST"
+    for file in "$@"
+    do
+        printf "%s\n" "$(realpath -Lm -- "$file")" >> "$TMPDIR_SESSION/file_lists/$FILE_LIST"
+    done
+    sort -- "$TMPDIR_SESSION/file_lists/$FILE_LIST" | uniq | sponge -- "$TMPDIR_SESSION/file_lists/$FILE_LIST"
+}
+
+fl- ()
+{
+    [ ! -d "$TMPDIR_SESSION/file_lists" ] && mkdir -- "$TMPDIR_SESSION/file_lists"
+
+    : ${FILE_LIST:="default"}
+
+    [ -f "$TMPDIR_SESSION/file_lists/$FILE_LIST" ] || return
+
+    for file in "$@"
+    do
+        printf "%s\n" "$(realpath -Lm -- "$file")"
+    done |
+        sort | comm -23 -- "$TMPDIR_SESSION/file_lists/$FILE_LIST" - | sponge "$TMPDIR_SESSION/file_lists/$FILE_LIST"
+
+    [ -s "$TMPDIR_SESSION/file_lists/$FILE_LIST" ] || rm -f -- "$TMPDIR_SESSION/file_lists/$FILE_LIST"
+}
+
+flr ()
+{
+    [ ! -d "$TMPDIR_SESSION/file_lists" ] && mkdir -- "$TMPDIR_SESSION/file_lists"
+
+    : ${FILE_LIST:="default"}
+
+    rm -f -- "$TMPDIR_SESSION/file_lists/$FILE_LIST"
+}
+
+fle ()
+{
+    [ ! -d "$TMPDIR_SESSION/file_lists" ] && mkdir -- "$TMPDIR_SESSION/file_lists"
+
+    : ${FILE_LIST:="default"}
+
+    "$EDITOR" -- "$TMPDIR_SESSION/file_lists/$FILE_LIST"
+    sort -- "$TMPDIR_SESSION/file_lists/$FILE_LIST" | uniq | sed '/^$/d' | sponge -- "$TMPDIR_SESSION/file_lists/$FILE_LIST"
+}
+
+fll ()
+{
+    [ ! -d "$TMPDIR_SESSION/file_lists" ] && mkdir -- "$TMPDIR_SESSION/file_lists"
+
+    : ${FILE_LIST:="default"}
+
+    cat -- "$TMPDIR_SESSION/file_lists/$FILE_LIST" 2> /dev/null || true
+}
+

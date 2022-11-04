@@ -421,6 +421,11 @@ alias egrep='egrep --color=auto'
 alias diff='diff --color=auto'
 
 # }}}
+# xargs {{{
+
+alias xargs_="xargs -d '\n' "
+
+# }}}
 # }}}
 
 # vim: ft=zsh: foldmethod=marker:
