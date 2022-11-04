@@ -1,4 +1,6 @@
-dot-files-xorg dot-files-graphics_terminal_compat \
+dot-files-xorg dot-files-graphics_audio dot-files-graphics_terminal_compat \
 zathura feh \
 surf \
+tty-clock \
+ffmpeg maim \
 moreutils shantz-xwinwrap-bzr

@@ -1,0 +1,8 @@
+# make screenshot
+{_,ctrl + }{_,shift + } Print
+    {screenshot.sh,screenshot.sh -s -u} {| clip.sh image/png, }
+
+# make screencast
+super + {_,shift + }{_,ctrl + } Print
+    capture.sh {screen,screen/mic} {"#","+"}
+
