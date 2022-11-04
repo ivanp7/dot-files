@@ -3,5 +3,4 @@ xorg-server xorg-xinit xorg-xhost xorg-xkill xorg-xev xorg-xmodmap acpilight \
 bspwm polybar sxhkd dunst unclutter \
 st dmenu tabbed nsxiv slock \
 xclip xdotool xkb-switch jq \
-libnotify fontconfig dex \
-alsa-utils pulseaudio pavucontrol paprefs
+libnotify fontconfig dex
