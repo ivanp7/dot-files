@@ -147,6 +147,10 @@ super + alt + bracket{left,right}
 super + alt + {Cyrillic_ha,Cyrillic_hardsign}
     bspwm-desktops.sh {dec,inc}
 
+# rename current desktop
+super + r
+    bspwm-desktop-rename.sh
+
 # focus the last node/desktop
 super + {ctrl + ,_}Tab
     bspc {node,desktop} -f last
