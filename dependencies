@@ -1,0 +1,3 @@
+dot-files-base \
+openssh sshfs rsync \
+gnu-netcat wol
