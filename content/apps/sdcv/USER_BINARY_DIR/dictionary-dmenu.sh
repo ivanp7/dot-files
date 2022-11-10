@@ -12,7 +12,7 @@ INPUT=$(tac -- "$HISTORY_FILE" | uniq | dmenu -p "$DMENU_PROMPT" -l $DMENU_LINES
 
 OUTPUT_FILE=$(mktemp -p /tmp dictionary.XXXXXXXX)
 trap 'rm -f -- "$OUTPUT_FILE"' EXIT
-dictionary.sh -n "$INPUT" > "$OUTPUT_FILE"
+dict.sh -n "$INPUT" > "$OUTPUT_FILE"
 
 export TABBED_CLASS="scratchpad_${SCRATCHPAD_DICT:-0}"
 bspwm-scratchpad.sh "scratchpad_${SCRATCHPAD_DICT:-0}" show
