@@ -485,7 +485,6 @@ TRAPINT ()
 _p_trap_exit ()
 {
     [ "$_p_in_prompt" ] && _p_set_abandoned_prompt
-    uninit_shell
 }
 trap '_p_trap_exit' EXIT
 
@@ -493,9 +492,10 @@ _p_prompt ()
 {
     echo "${_color_reset}"
 
-    if [ ! -f "$TMPDIR_SESSION/shell_info/$TTY/$$" ]
+    if ! _p_prompt_is_active
     then
-        touch -- "$TMPDIR_SESSION/shell_info/$TTY/$$"
+        _p_activate_prompt
+
         separator
         shell_info
         echo

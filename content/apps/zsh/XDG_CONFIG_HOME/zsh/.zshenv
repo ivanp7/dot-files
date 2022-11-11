@@ -20,8 +20,7 @@ export XDG_CONFIG_HOME XDG_CACHE_HOME XDG_DATA_HOME XDG_STATE_HOME XDG_DATA_DIRS
 # tmpfs directory
 
 export TMPDIR="/tmp"
-[ -z "$TMPDIR_SESSION" ] && export TMPDIR_SESSION="$(mktemp -d)"
-trap '[ "$(find "$TMPDIR_SESSION/pid" -type f 2> /dev/null | wc -l)" -eq 0 ] && rm -rf -- "$TMPDIR_SESSION"' EXIT
+[ -z "$TMPDIR_SESSION" ] && export TMPDIR_SESSION="$(mktemp -d -p "$TMPDIR" "session.XXXXXX")"
 
 # sudo configuration
 
