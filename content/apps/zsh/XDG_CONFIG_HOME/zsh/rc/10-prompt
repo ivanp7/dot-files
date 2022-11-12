@@ -224,15 +224,14 @@ _p_cmd_status_info_f ()
     local FailureColorFg="$_p_cmd_status_info_color_failure_fg"
     local FailureColorBg="$_p_cmd_status_info_color_failure_bg"
 
-    local DownArrow="↓"
-    local Delimiter=":"
+    local Delimiter="·"
 
     if [ "$_p_exitcode" ]
     then
         if [ "$_p_exitcode" -eq 0 ]
         then
-            _p_cmd_status_info_length=5
-            _p_cmd_status_info="${SuccessColorBg}${TriangleColor}${_p_triangle}${SuccessColorFg} ok "
+            _p_cmd_status_info_length=2
+            _p_cmd_status_info="${SuccessColorBg}${TriangleColor}${_p_triangle}${SuccessColorFg} "
 
             _p_next_triangle_color="$_p_cmd_status_info_color_triangle_success"
             _p_prompt_postfix_color="$_p_cmd_status_info_color_triangle_success"
@@ -250,8 +249,8 @@ _p_cmd_status_info_f ()
             fi
             [ "$description" ] && local description="${Delimiter}$description"
 
-            _p_cmd_status_info_length=$((4 + ${#_p_exitcode} + ${#description}))
-            _p_cmd_status_info="${FailureColorBg}${TriangleColor}${_p_triangle}${FailureColorFg} ${DownArrow}${_p_exitcode}${description} "
+            _p_cmd_status_info_length=$((3 + ${#_p_exitcode} + ${#description}))
+            _p_cmd_status_info="${FailureColorBg}${TriangleColor}${_p_triangle}${FailureColorFg} ${_p_exitcode}${description} "
 
             _p_next_triangle_color="$_p_cmd_status_info_color_triangle_failure"
             _p_prompt_postfix_color="$_p_cmd_status_info_color_triangle_failure"
@@ -271,7 +270,7 @@ add-zsh-hook precmd _p_cmd_status_info_f
 _p_cmd_time_info_f ()
 {
     local TriangleColor="$_p_next_triangle_color"
-    local Postfix="${_p_bracket}"
+    local Postfix="${_p_bracket}${_p_bracket}"
 
     if [ -z "$_p_timer_delta" -o "$_p_timer_delta" -eq 0 ]
     then
@@ -425,7 +424,7 @@ _p_set_insert_prompt ()
 
 _p_set_vicommand_prompt ()
 {
-    RPROMPT="%{${_p_rprompt_color}%}vicmd%{$(echo "${_color_reset}")%}"
+    RPROMPT="%{${_p_rprompt_color}%}▶ vi ◀%{$(echo "${_color_reset}")%}"
     _p_set_cursor_shape block
 }
 
