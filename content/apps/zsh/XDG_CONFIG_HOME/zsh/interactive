@@ -9,12 +9,12 @@ mkdir -p -- "$XDG_STATE_HOME/zsh"
 HISTFILE="$XDG_STATE_HOME/zsh/history"
 HISTSIZE=100000
 SAVEHIST=10000
-setopt appendhistory extendedglob nomatch
-setopt autocd autopushd pushdignoredups
-unsetopt beep notify
 
-setopt COMPLETE_ALIASES
-setopt HIST_IGNORE_DUPS HIST_FIND_NO_DUPS
+setopt APPEND_HISTORY HIST_IGNORE_DUPS HIST_FIND_NO_DUPS
+setopt AUTO_PUSHD PUSHD_IGNORE_DUPS
+setopt NOMATCH COMPLETE_ALIASES
+unsetopt BEEP NOTIFY
+unsetopt AUTO_REMOVE_SLASH
 
 autoload -Uz add-zsh-hook
 
