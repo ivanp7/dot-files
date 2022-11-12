@@ -201,12 +201,17 @@ fi
 # }}}
 # Shell info display {{{
 
-if [[ ! -o login ]]
+if [ "$_p_no_shell_info" ]
 then
-    echo
-    sleep 0.1
-    separator
-    shell_info
+    unset _p_no_shell_info
+else
+    if [[ ! -o login ]]
+    then
+        echo
+        sleep 0.1
+        separator
+        shell_info
+    fi
 fi
 
 # }}}
