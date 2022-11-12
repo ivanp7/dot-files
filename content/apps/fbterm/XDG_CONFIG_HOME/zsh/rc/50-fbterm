@@ -1,2 +1,5 @@
-alias fbterm='fbterm.sh'
+fbterm ()
+{
+    _p_no_shell_info=1 zsh -ic "fbterm.sh"
+}
 

@@ -2,9 +2,6 @@
 
 [ "$TERM" = "linux" ] || exit
 
-# request display of shell info
-[ "$ZDOTDIR" ] && "$ZDOTDIR/aux/request_shell_info.sh"
-
 : ${FBTERM_WALLPAPER:="$HOME/wallpapers/fbterm"}
 
 if [ -e "$FBTERM_WALLPAPER" ] && file --mime-type "$FBTERM_WALLPAPER" -bLE | grep -q "^image/"
