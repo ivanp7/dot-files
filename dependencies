@@ -1,2 +1,4 @@
 dot-files-xorg \
-alsa-utils pulseaudio pavucontrol paprefs
+alsa-utils pulseaudio \
+pavucontrol paprefs \
+pasystray
