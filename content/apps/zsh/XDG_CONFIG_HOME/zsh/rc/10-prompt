@@ -36,7 +36,7 @@ _p_prompt_set_env_f ()
         unset PROMPT_EXEC_TIME
     fi
 
-    export PROMPT_STATUS="$_p_command_number${STATUS:+"·"}$STATUS"
+    export PROMPT_STATUS="${SSH_TTY:+"${HOST}·"}$_p_command_number${STATUS:+"·"}$STATUS"
 
     unset PROMPT_PATH
 }
