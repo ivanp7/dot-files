@@ -424,7 +424,7 @@ _p_set_insert_prompt ()
 
 _p_set_vicommand_prompt ()
 {
-    RPROMPT="%{${_p_rprompt_color}%}▶ vi ◀%{$(echo "${_color_reset}")%}"
+    RPROMPT="%{${_p_rprompt_color}%} vi %{$(echo "${_color_reset}")%}"
     _p_set_cursor_shape block
 }
 

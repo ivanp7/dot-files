@@ -14,7 +14,7 @@ setopt APPEND_HISTORY HIST_IGNORE_DUPS HIST_FIND_NO_DUPS
 setopt AUTO_PUSHD PUSHD_IGNORE_DUPS
 setopt NOMATCH COMPLETE_ALIASES
 unsetopt BEEP NOTIFY
-unsetopt AUTO_REMOVE_SLASH
+unsetopt AUTO_REMOVE_SLASH AUTO_PARAM_SLASH AUTO_PARAM_KEYS
 
 autoload -Uz add-zsh-hook
 
@@ -30,6 +30,7 @@ fpath=($fpath "$(realpath -L "$ZDOTDIR/completion")")
 
 autoload -Uz compinit
 zmodload zsh/complist
+zstyle ':completion:*' add-space false
 zstyle ':completion:*' menu select
 zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/zcompcache"
 compinit -d "$XDG_CACHE_HOME/zsh/zcompdump-$ZSH_VERSION"
