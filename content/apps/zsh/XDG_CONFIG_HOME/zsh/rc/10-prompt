@@ -1,411 +1,71 @@
-# Auxilliary constants & functions {{{
-
-[ "$(id -u)" -eq 0 ] && _p_root=true
-
-[ -z "$_p_root" ] && _p_prompt_character="$" || _p_prompt_character="#"
-
-# }}}
-# Color theme {{{
-
-if [ "$_colors" -ge 256 ]
-then
-    if [ -z "$_p_root" ]
-    then
-        _p_shell_info_color="$(_color 248 238)"
-        _p_shell_status_color="$(_color 252 238)"
-        _p_shell_info_color_triangle="$(_color 238)"
-    else
-        _p_shell_info_color="$(_color 8 202)"
-        _p_shell_status_color="$(_color 0 202)"
-        _p_shell_info_color_triangle="$(_color 202)"
-    fi
-
-    _p_pwd_info_color_bg="$(_color "" 240)"
-    _p_pwd_info_color_triangle="$(_color 240)"
-    _p_pwd_info_color_directory="$(_color 254)"
-    _p_pwd_info_color_slash="$(_color 236)"
-    _p_pwd_info_color_skip="$(_color 200)"
-    _p_pwd_perm_info_color="$(_color 1)"
-
-    _p_git_info_color_bg="$(_color "" 238)"
-    _p_git_info_color_triangle="$(_color 238)"
-    _p_git_info_color_skip="$(_color 228)"
-
-    _p_cmd_status_info_color_success_fg="$(_color 15)"
-    _p_cmd_status_info_color_success_bg="$(_color "" 35)"
-    _p_cmd_status_info_color_triangle_success="$(_color 35)"
-    _p_cmd_status_info_color_failure_fg="$(_color 7)"
-    _p_cmd_status_info_color_failure_bg="$(_color "" 124)"
-    _p_cmd_status_info_color_triangle_failure="$(_color 124)"
-
-    _p_cmd_time_info_color_bg="$(_color "" 238)"
-    _p_cmd_time_info_color_fg="$(_color 33)"
-    _p_cmd_time_info_color_triangle="$(_color 238)"
-
-    _p_prompt_postfix_color_default="$(_color 244)"
-
-    _p_rprompt_color="$(_color 0 15)"
-else # fallback colors in case of incorrect conversion to 8 colors
-    if [ -z "$_p_root" ]
-    then
-        _p_shell_info_color="$(_color 7)"
-        _p_shell_info_color_triangle="$(_color 0)"
-    else
-        _p_shell_info_color="$(_color 0 3)"
-        _p_shell_info_color_triangle="$(_color 3)"
-    fi
-
-    _p_pwd_info_color_bg="$(_color "" 7)"
-    _p_pwd_info_color_directory="$(_color 15)"
-    _p_pwd_info_color_slash="$(_color 8)"
-    _p_pwd_info_color_skip="$(_color 13)"
-    _p_pwd_perm_info_color="$(_color 1)"
-
-    _p_git_info_color_bg="$(_color "" 0)"
-    _p_git_info_color_triangle="$(_color 0)"
-    _p_git_info_color_skip="$(_color 11)"
-
-    _p_cmd_status_info_color_success_fg="$(_color 15)"
-    _p_cmd_status_info_color_success_bg="$(_color "" 2)"
-    _p_cmd_status_info_color_failure_fg="$(_color 7)"
-    _p_cmd_status_info_color_failure_bg="$(_color "" 1)"
-
-    _p_cmd_time_info_color_bg="$(_color "" 0)"
-    _p_cmd_time_info_color_fg="$(_color 12)"
-    _p_cmd_time_info_color_triangle="$(_color 0)"
-
-    _p_prompt_postfix_color_default="$(_color 15)"
-
-    _p_rprompt_color="$(_color 0 15)"
-fi
-
-# }}}
-# Shared characters {{{
-
-_p_triangle=""
-_p_bracket=""
-_p_skip="▶"
-
-# }}}
-# Shell info {{{
-
+[ "$(id -u)" -eq 0 ] && export PROMPT_ROOT= || unset PROMPT_ROOT
 : ${_p_command_number:=1}
-
-_p_command_number_f ()
-{
-    [ "$_p_command_executed" ] && _p_command_number=$(($_p_command_number+1))
-}
-add-zsh-hook precmd _p_command_number_f
-
-_p_shell_info_f ()
-{
-    local Dot="·"
-
-    local PromptStatus="$STATUS${STATUS:+" "}"
-
-    _p_shell_info_length=$((1 + ${#_p_command_number} + 1 + ${#PromptStatus}))
-    _p_shell_info="${_p_shell_info_color} ${_p_command_number}${_p_shell_status_color} ${PromptStatus}"
-
-    _p_next_triangle_color="$_p_shell_info_color_triangle"
-}
-add-zsh-hook precmd _p_shell_info_f
-
-_p_prev_command_info_f ()
-{
-    _p_exitcode="$?" # This needs to be first
-
-    if [ "$_p_command_executed" ]
-    then
-        unset _p_command_executed
-
-        if [ "$_p_timer" ]
-        then
-            _p_timer_delta=$(($SECONDS - $_p_timer))
-            [ $_p_timer_delta -lt 0 ] && _p_timer_delta=0
-            unset _p_timer
-        fi
-    else
-        unset _p_timer_delta
-        unset _p_timer
-        unset _p_exitcode
-    fi
-
-    _p_in_prompt=true
-}
-add-zsh-hook precmd _p_prev_command_info_f
 
 _p_preexec ()
 {
     unset _p_in_prompt
-    _p_timer=${_p_timer:-$SECONDS}
+
+    _p_timer=$SECONDS
     _p_command_executed=true
 
     _p_prompt_postcommand_preexec
 }
 add-zsh-hook preexec _p_preexec
 
-# }}}
-# Git info {{{
-
-_p_git_info_f ()
+_p_prompt_set_env_f ()
 {
-    local BgColor="$_p_git_info_color_bg"
+    export PROMPT_EXIT_CODE="$?" # This needs to be first
 
-    local GitInfo="$(git_info "${BgColor}" true)"
+    _p_in_prompt=true
 
-    _p_git_info_length="$(echo "$GitInfo" | tail -1)"
-    _p_git_info=""
-    if [ "$_p_git_info_length" -eq 0 ]
+    if [ "$_p_command_executed" ]
     then
-        _p_git_info_length=0
-        _p_git_info=""
+        unset _p_command_executed
 
-        _p_next_triangle_color="$_p_pwd_info_color_triangle"
-        return
-    fi
+        _p_command_number=$(($_p_command_number + 1))
 
-    _p_git_info_length=$(($_p_git_info_length + 3))
-    _p_git_info="${BgColor}${_p_pwd_info_color_triangle}${_p_triangle} $(echo "$GitInfo" | head -1)${BgColor} "
-
-    _p_gitindicator_length=4
-    _p_gitindicator="${BgColor}${_p_pwd_info_color_triangle}${_p_triangle} ${_p_git_info_color_skip}${_p_skip} "
-
-    _p_next_triangle_color="$_p_git_info_color_triangle"
-}
-add-zsh-hook precmd _p_git_info_f
-
-# }}}
-# Last command exit code info {{{
-
-_p_signal_name ()
-{
-    case $1 in
-        1  ) echo -n "SIGHUP" ;;
-        2  ) echo -n "SIGINT" ;;
-        3  ) echo -n "SIGQUIT" ;;
-        4  ) echo -n "SIGILL" ;;
-        5  ) echo -n "SIGTRAP" ;;
-        6  ) echo -n "SIGABRT" ;;
-        7  ) echo -n "SIGBUS" ;;
-        8  ) echo -n "SIGFPE" ;;
-        9  ) echo -n "SIGKILL" ;;
-        10 ) echo -n "SIGUSR1" ;;
-        11 ) echo -n "SIGSEGV" ;;
-        12 ) echo -n "SIGUSR2" ;;
-        13 ) echo -n "SIGPIPE" ;;
-        14 ) echo -n "SIGALRM" ;;
-        15 ) echo -n "SIGTERM" ;;
-        16 ) echo -n "SIGSTKFLT" ;;
-        17 ) echo -n "SIGCHLD" ;;
-        18 ) echo -n "SIGCONT" ;;
-        19 ) echo -n "SIGSTOP" ;;
-        20 ) echo -n "SIGTSTP" ;;
-        21 ) echo -n "SIGTTIN" ;;
-        22 ) echo -n "SIGTTOU" ;;
-        23 ) echo -n "SIGURG" ;;
-        24 ) echo -n "SIGXCPU" ;;
-        25 ) echo -n "SIGXFSZ" ;;
-        26 ) echo -n "SIGVTALRM" ;;
-        27 ) echo -n "SIGPROF" ;;
-        28 ) echo -n "SIGWINCH" ;;
-        29 ) echo -n "SIGIO" ;;
-        30 ) echo -n "SIGPWR" ;;
-        31 ) echo -n "SIGSYS" ;;
-        34 ) echo -n "SIGRTMIN" ;;
-        *) echo -n "$1" ;;
-    esac
-}
-
-_p_cmd_status_info_f ()
-{
-    local TriangleColor="$_p_next_triangle_color"
-    local SuccessColorFg="$_p_cmd_status_info_color_success_fg"
-    local SuccessColorBg="$_p_cmd_status_info_color_success_bg"
-    local FailureColorFg="$_p_cmd_status_info_color_failure_fg"
-    local FailureColorBg="$_p_cmd_status_info_color_failure_bg"
-
-    local Delimiter="·"
-
-    if [ "$_p_exitcode" ]
-    then
-        if [ "$_p_exitcode" -eq 0 ]
+        if [ "$_p_timer" ]
         then
-            _p_cmd_status_info_length=2
-            _p_cmd_status_info="${SuccessColorBg}${TriangleColor}${_p_triangle}${SuccessColorFg} "
+            export PROMPT_EXEC_TIME=$(($SECONDS - $_p_timer))
+            unset _p_timer
 
-            _p_next_triangle_color="$_p_cmd_status_info_color_triangle_success"
-            _p_prompt_postfix_color="$_p_cmd_status_info_color_triangle_success"
-        else
-            if [ "$_p_exitcode" -gt 128 -a "$_p_exitcode" -lt 163 ]
-            then
-                local description="$(_p_signal_name $(($_p_exitcode - 128)))"
-            else
-                case "$_p_exitcode" in
-                    1) local description="GENERAL" ;;
-                    2) local description="MISUSE" ;;
-                    126) local description="NOTEXEC" ;;
-                    127) local description="NOTFOUND" ;;
-                esac
-            fi
-            [ "$description" ] && local description="${Delimiter}$description"
-
-            _p_cmd_status_info_length=$((3 + ${#_p_exitcode} + ${#description}))
-            _p_cmd_status_info="${FailureColorBg}${TriangleColor}${_p_triangle}${FailureColorFg} ${_p_exitcode}${description} "
-
-            _p_next_triangle_color="$_p_cmd_status_info_color_triangle_failure"
-            _p_prompt_postfix_color="$_p_cmd_status_info_color_triangle_failure"
+            [ "$PROMPT_EXEC_TIME" -lt 0 ] && unset PROMPT_EXEC_TIME
         fi
     else
-        _p_cmd_status_info_length=0
-        _p_cmd_status_info=""
-
-        _p_prompt_postfix_color="$_p_prompt_postfix_color_default"
-    fi
-}
-add-zsh-hook precmd _p_cmd_status_info_f
-
-# }}}
-# Last command duration info {{{
-
-_p_cmd_time_info_f ()
-{
-    local TriangleColor="$_p_next_triangle_color"
-    local Postfix="${_p_bracket}${_p_bracket}"
-
-    if [ -z "$_p_timer_delta" -o "$_p_timer_delta" -eq 0 ]
-    then
-        _p_cmd_time_info_length=$((1 + ${#Postfix}))
-        _p_cmd_time_info="${_color_reset}${TriangleColor}${_p_triangle}${_p_prompt_postfix_color}${Postfix}"
-        return
+        unset PROMPT_EXIT_CODE
+        unset PROMPT_EXEC_TIME
     fi
 
-    local BgColor="$_p_cmd_time_info_color_bg"
+    export PROMPT_STATUS="$_p_command_number${STATUS:+"·"}$STATUS"
 
-    local UnitColor="$_p_next_triangle_color"
-    local ValueColor="$_p_next_triangle_color"
+    unset PROMPT_PATH
+    [ -r "." ] && unset PROMPT_DIR_UNREADABLE || export PROMPT_DIR_UNREADABLE=
+    [ -w "." ] && unset PROMPT_DIR_UNWRITABLE || export PROMPT_DIR_UNWRITABLE=
 
-    if [ "$_p_timer_delta" -lt 60 ]
+    if git rev-parse --is-inside-work-tree > /dev/null 2>&1 && [ "$(git rev-parse --is-inside-git-dir 2> /dev/null)" = "false" ]
     then
-        _p_cmd_time_info_length=$((4 + ${#_p_timer_delta}))
-        _p_cmd_time_info="${BgColor}${TriangleColor}${_p_triangle} ${ValueColor}${_p_timer_delta}${UnitColor}s "
-    elif [ "$_p_timer_delta" -lt 3600 ]
-    then
-        local minutes=$(($_p_timer_delta / 60))
-        local seconds=$(($_p_timer_delta % 60))
-        _p_cmd_time_info_length=$((5 + ${#minutes} + ${#seconds}))
-        _p_cmd_time_info="${BgColor}${TriangleColor}${_p_triangle} ${ValueColor}${minutes}${UnitColor}m${ValueColor}${seconds}${UnitColor}s "
-    elif [ "$_p_timer_delta" -lt 86400 ]
-    then
-        local hours=$(($_p_timer_delta / 3600))
-        local minutes=$(($_p_timer_delta / 60 % 60))
-        _p_cmd_time_info_length=$((5 + ${#hours} + ${#minutes}))
-        _p_cmd_time_info="${BgColor}${TriangleColor}${_p_triangle} ${ValueColor}${hours}${UnitColor}h${ValueColor}${minutes}${UnitColor}m "
+        export PROMPT_GIT_BRANCH=${$(git symbolic-ref -q HEAD || git name-rev --name-only --no-undefined --always HEAD)#(refs/heads/|tags/)}
+
+        export PROMPT_GIT_AHEAD="$(git log --oneline @{u}.. 2> /dev/null | wc -l | tr -d ' ')"
+        [ "$PROMPT_GIT_AHEAD" -gt 0 ] || unset PROMPT_GIT_AHEAD
+
+        export PROMPT_GIT_BEHIND="$(git log --oneline ..@{u} 2> /dev/null | wc -l | tr -d ' ')"
+        [ "$PROMPT_GIT_BEHIND" -gt 0 ] || unset PROMPT_GIT_BEHIND
+
+        local GIT_DIR="$(git rev-parse --git-dir 2> /dev/null)"
+        [ -n "$GIT_DIR" -a -r "$GIT_DIR/MERGE_HEAD" ] && export PROMPT_GIT_MERGING= || unset PROMPT_GIT_MERGING
+
+        [ "$(git ls-files $(git rev-parse --show-toplevel) --other --exclude-standard 2> /dev/null)" ] &&
+            export PROMPT_GIT_UNTRACKED= || unset PROMPT_GIT_UNTRACKED
+
+        git diff --quiet 2> /dev/null && unset PROMPT_GIT_MODIFIED || export PROMPT_GIT_MODIFIED=
+        git diff --cached --quiet 2> /dev/null && unset PROMPT_GIT_STAGED || export PROMPT_GIT_STAGED=
     else
-        local days=$(($_p_timer_delta / 86400))
-        local hours=$(($_p_timer_delta / 3600 % 24))
-        _p_cmd_time_info_length=$((5 + ${#days} + ${#hours}))
-        _p_cmd_time_info="${BgColor}${TriangleColor}${_p_triangle} ${ValueColor}${days}${UnitColor}d${ValueColor}${hours}${UnitColor}h "
-    fi
-
-    local TriangleColor="$_p_cmd_time_info_color_triangle"
-    _p_cmd_time_info_length=$(($_p_cmd_time_info_length + 1 + ${#Postfix}))
-    _p_cmd_time_info="${_p_cmd_time_info}${_color_reset}${TriangleColor}${_p_triangle}${_p_prompt_postfix_color}${Postfix}"
-}
-add-zsh-hook precmd _p_cmd_time_info_f
-
-# }}}
-# Present working directory info {{{
-
-_p_pwd_perm_info_f ()
-{
-    local IndicatorColor="$_p_pwd_perm_info_color"
-
-    if [ ! -r "." -a ! -w "." ]
-    then
-        _p_pwd_perm_info_length=3
-        _p_pwd_perm_info="${IndicatorColor}rw "
-    elif [ ! -w "." ]
-    then
-        _p_pwd_perm_info_length=2
-        _p_pwd_perm_info="${IndicatorColor}w "
-    elif [ ! -r "." ]
-    then
-        _p_pwd_perm_info_length=2
-        _p_pwd_perm_info="${IndicatorColor}r "
-    else
-        _p_pwd_perm_info_length=0
-        _p_pwd_perm_info=""
+        unset PROMPT_GIT_BRANCH
+        unset PROMPT_GIT_AHEAD PROMPT_GIT_BEHIND PROMPT_GIT_MERGING PROMPT_GIT_UNTRACKED PROMPT_GIT_MODIFIED PROMPT_GIT_STAGED
     fi
 }
-add-zsh-hook precmd _p_pwd_perm_info_f
-
-_p_pwd_info_guard_path ()
-{
-    printf "%s" "$1" | sed 's/\\/\\\\/g'
-}
-
-_p_pwd_info_f ()
-{
-    local TriangleColor="$_p_shell_info_color_triangle"
-    local BgColor="$_p_pwd_info_color_bg"
-    local DirColor="$_p_pwd_info_color_directory"
-    local SlashColor="$_p_pwd_info_color_slash"
-
-    local SkipCharacter="${_p_pwd_info_color_skip}${_p_skip}"
-
-    if [ "$PWD" = "/" ]
-    then
-        _p_pwd_info="${BgColor}${TriangleColor}${_p_triangle} ${DirColor}/ "
-        return
-    fi
-
-    local PromptLength=$(($_p_shell_info_length + $_p_cmd_time_info_length + $_p_cmd_status_info_length +
-                            $_p_pwd_perm_info_length + $_p_git_info_length + 3))
-    local MaxOutputLength=$(($COLUMNS - $PromptLength))
-
-    local PathLength=${#PWD}
-    local PathExcess=$(($PathLength - $MaxOutputLength))
-
-    if [ "$PathExcess" -ge "$((2 * $_p_git_info_length - ${_p_gitindicator_length:=0}))" ]
-    then
-        local MaxOutputLength=$(($MaxOutputLength + $_p_git_info_length - $_p_gitindicator_length))
-        local PathExcess=$(($PathLength - $MaxOutputLength))
-        _p_git_info_length=$_p_gitindicator_length
-        _p_git_info="$_p_gitindicator"
-    fi
-
-    local PathDirs=(${(s@/@)${PWD:1}}) # split path into components
-    local DirCounter=${#PathDirs}
-
-    for dir in $PathDirs
-    do
-        if [ "$PathExcess" -le 0 -o "${#dir}" -le 2 ]
-        then
-            local dir="${DirColor}$(_p_pwd_info_guard_path "$dir")"
-        else
-            local DirDelta=$((${#dir} - 2))
-            if [ "$DirDelta" -le "$PathExcess" ]
-            then
-                local dir="${DirColor}$(_p_pwd_info_guard_path "${dir:0:1}")${SkipCharacter}"
-                local PathLength=$(($PathLength - $DirDelta))
-                local PathExcess=$(($PathLength - $MaxOutputLength))
-            else
-                local dir="${DirColor}$(_p_pwd_info_guard_path "${dir:0:-$(($PathExcess + 1))}")${SkipCharacter}"
-                local PathLength=$(($PathLength - $PathExcess))
-                local PathExcess=0
-            fi
-        fi
-
-        local PathStr="${PathStr}${SlashColor}$(($DirCounter % 10))$dir"
-        local DirCounter=$(($DirCounter - 1))
-    done
-
-    _p_pwd_info="${BgColor}${TriangleColor}${_p_triangle} $PathStr "
-}
-add-zsh-hook precmd _p_pwd_info_f
-
-# }}}
-# Prompt {{{
+add-zsh-hook precmd _p_prompt_set_env_f
 
 _p_set_cursor_shape ()
 {
@@ -424,7 +84,7 @@ _p_set_insert_prompt ()
 
 _p_set_vicommand_prompt ()
 {
-    RPROMPT="%{${_p_rprompt_color}%} vi %{$(echo "${_color_reset}")%}"
+    RPROMPT="%{$(_color 0 15)%} vi %{$(echo "${_color_reset}")%}"
     _p_set_cursor_shape block
 }
 
@@ -489,18 +149,16 @@ trap '_p_trap_exit' EXIT
 
 _p_prompt ()
 {
-    echo "${_color_reset}"
-
     if ! _p_prompt_is_active
     then
         _p_activate_prompt
 
         separator
         shell_info
-        echo
     fi
 
-    echo "${_p_shell_info}${_p_pwd_info}${_p_pwd_perm_info}${_p_git_info}${_p_cmd_status_info}${_p_cmd_time_info}${_color_reset}"
+    echo
+    prompt.py
 
     PROMPT=""
     PROMPT2=""
@@ -509,6 +167,3 @@ _p_prompt ()
 }
 add-zsh-hook precmd _p_prompt
 
-# }}}
-
-# vim: ft=zsh: foldmethod=marker:
