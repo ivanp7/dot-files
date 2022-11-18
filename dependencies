@@ -1,2 +1,3 @@
 dot-files-base \
-roswell
+roswell \
+common-lisp-hyperspec
