@@ -15,6 +15,9 @@ set mouse       =a
 
 set termguicolors
 
+set title
+set titlestring=%(%{expand(\"%:~:.:h\")}%)/%t\ -\ nvimpager
+
 set list                   " Show non-printable characters.
 if has('multi_byte') && &encoding ==# 'utf-8'
   let &listchars = 'tab:▸ ,extends:❯,precedes:❮,nbsp:±'
