@@ -8,5 +8,9 @@ WALLPAPER="$(find -L . -path "./.git" -prune -o -type f -o -type l | sed 's@^\./
     done | dmenu -l 10 -i | head -1)"
 
 pkill xwinwrap
-wallpaper.sh "$WALLPAPER" animated
+for monitor in $(bspc query -M)
+do
+    GEOMETRY="$(bspc query -m "$monitor" -T | jq ".rectangle.width,.rectangle.height,.rectangle.x,.rectangle.y" | paste -sd+ | sed 's/+/x/')"
+    wallpaper.sh "$WALLPAPER" animated "$GEOMETRY"
+done
 
