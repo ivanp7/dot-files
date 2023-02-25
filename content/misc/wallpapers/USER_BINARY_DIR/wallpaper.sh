@@ -1,40 +1,42 @@
 #!/bin/sh
 
 FILE="$1"
-MODE=$2
-START=$3
+MODE="$2"
 
-[ "$FILE" ] || exit 1
-
-# kill animated wallpaper, if it is displayed
-pkill xwinwrap
+ANIM_GEOMETRY="$3"
+ANIM_START_POS="$4"
 
 set_classic_wallpaper ()
 {
-    feh --no-fehbg --bg-scale "$1"
+    feh --no-fehbg --bg-scale "$FILE"
 }
 
 start_animated_wallpaper ()
 {
-    [ -z "$2" ] && RAND=$(shuf -i 0-99 -n 1) || RAND=$(($2 % 100))
-    MPV_OPTS="$MPV_OPTIONS --osc=no --osd-level=0 --no-input-default-bindings --mute=yes --loop=inf --start=$RAND%"
+    [ -z "$ANIM_START_POS" ] &&
+        ANIM_START_POS="$(shuf -i 0-99 -n 1)" ||
+        ANIM_START_POS="$(($ANIM_START_POS % 100))"
+
+    MPV_OPTS="$MPV_OPTIONS --osc=no --osd-level=0 --no-input-default-bindings --mute=yes --loop=inf --start=${ANIM_START_POS}%"
 
     # dependency: shantz-xwinwrap-bzr from AUR
-    [ -f "$1" ] && exec $VIDEO_ACCELERATOR xwinwrap -ov -g "$(bspwm-monitor-info.sh slop | head -1)" -- mpv -wid WID $MPV_OPTS "$1" > /dev/null 2>&1 &
+    setsid -f $VIDEO_ACCELERATOR xwinwrap -ov ${ANIM_GEOMETRY:+-g "$ANIM_GEOMETRY"} -- mpv -wid WID $MPV_OPTS "$FILE" > /dev/null 2>&1 &
 }
+
+[ -r "$FILE" ] || exit 1
 
 if [ -z "$MODE" ]
 then
     mime_type=$(file --mime-type "$FILE" -bLE) || mime_type=""
     case $mime_type in
-        video/*) start_animated_wallpaper "$FILE" $START ;;
-        image/*) set_classic_wallpaper "$FILE" ;;
+        image/*) set_classic_wallpaper ;;
+        video/*) start_animated_wallpaper ;;
         *) exit 1 ;;
     esac
 else
     case "$MODE" in
-        animated) start_animated_wallpaper "$FILE" $START ;;
-        classic) set_classic_wallpaper "$FILE" ;;
+        classic) set_classic_wallpaper ;;
+        animated) start_animated_wallpaper ;;
         *) exit 1 ;;
     esac
 fi

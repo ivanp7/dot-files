@@ -7,5 +7,6 @@ WALLPAPER="$(find -L . -path "./.git" -prune -o -type f -o -type l | sed 's@^\./
     do file --mime-type -bLE "$file" | grep -q "^image/" && echo "$file"
     done | nsxiv -tio | shuf -n 1)"
 
+pkill xwinwrap
 wallpaper.sh "$WALLPAPER" classic
 

@@ -7,5 +7,6 @@ WALLPAPER="$(find -L . -path "./.git" -prune -o -type f -o -type l | sed 's@^\./
     do file --mime-type -bLE "$file" | grep -E -q "^(video/.*|image/gif)$" && echo "$file"
     done | dmenu -l 10 -i | head -1)"
 
+pkill xwinwrap
 wallpaper.sh "$WALLPAPER" animated
 
