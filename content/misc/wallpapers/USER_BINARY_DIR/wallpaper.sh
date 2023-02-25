@@ -20,7 +20,7 @@ start_animated_wallpaper ()
     MPV_OPTS="$MPV_OPTIONS --osc=no --osd-level=0 --no-input-default-bindings --mute=yes --loop=inf --start=$RAND%"
 
     # dependency: shantz-xwinwrap-bzr from AUR
-    [ -f "$1" ] && exec $VIDEO_ACCELERATOR xwinwrap -ov -g "$(monitor-info.sh slop | head -1)" -- mpv -wid WID $MPV_OPTS "$1" > /dev/null 2>&1 &
+    [ -f "$1" ] && exec $VIDEO_ACCELERATOR xwinwrap -ov -g "$(bspwm-monitor-info.sh slop | head -1)" -- mpv -wid WID $MPV_OPTS "$1" > /dev/null 2>&1 &
 }
 
 if [ -z "$MODE" ]
